@@ -7,7 +7,7 @@ var basename  = path.basename(module.filename);
 var env       = process.env.NODE_ENV || 'development';
 
 var config = require(__dirname + '/../config/development.json')[env];
-if(env !== 'development') {
+if(env === 'production') {
   config = require(__dirname + '/../config/production.json')[env];
 }
 
