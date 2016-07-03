@@ -6,8 +6,6 @@ module.exports = function(sequelize, DataTypes) {
     primary: { type: DataTypes.BOOLEAN, defaultValue: true},
     checked: { type: DataTypes.BOOLEAN, defaultValue: true}
   }, {
-    underscored: true
-  }, {
     classMethods: {
       associate: function(models) {
         Emails.belongsTo(models.users)

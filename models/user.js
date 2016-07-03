@@ -8,13 +8,12 @@ module.exports = function(sequelize, DataTypes) {
     phone: DataTypes.STRING,
     status: DataTypes.BOOLEAN
   }, {
-    underscored: true
-  }, {
     classMethods: {
       associate: function(models) {
         Users.hasMany(models.emails)
       }
     }
   });
+
   return Users;
 };

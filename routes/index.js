@@ -4,7 +4,7 @@ var models = require('../models/index');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  models.emails.findAll({})
+  models.users.findAll({include: [ {model: models.emails} ]})
       .then(function(users) {
     res.json(users);
   });
