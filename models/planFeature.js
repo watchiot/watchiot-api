@@ -1,18 +1,17 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
-  var Plans = sequelize.define('plans', {
+  var PlanFeatures = sequelize.define('plan_features', {
     id: { type: DataTypes.INTEGER, primaryKey: true },
-    name: DataTypes.STRING,
-    amount_per_month: DataTypes.DECIMAL
+    value: DataTypes.STRING
   } ,{
     timestamps: false,
     classMethods: {
       associate: function(models) {
-        Plans.hasOne(models.users)
-        Plans.hasMany(models.plan_features);
+        PlanFeatures.belongsTo(models.features);
+        PlanFeatures.belongsTo(models.plans);
       }
     }
   });
 
-  return Plans;
+  return PlanFeatures;
 };
