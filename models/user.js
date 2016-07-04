@@ -12,6 +12,7 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
         Users.hasMany(models.emails)
         Users.belongsTo(models.api_keys)
+        Users.belongsTo(models.plans)
       }
     }
   });

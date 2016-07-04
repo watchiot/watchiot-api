@@ -6,7 +6,6 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        console.log('called')
         ApiKeys.hasOne(models.users)
       }
     }

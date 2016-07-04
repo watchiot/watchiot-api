@@ -4,14 +4,14 @@ module.exports = function(sequelize, DataTypes) {
     id: { type: DataTypes.INTEGER, primaryKey: true },
     name: DataTypes.STRING,
     amount_per_month: DataTypes.DECIMAL
-  }, {
-    underscored: true
-  }, {
+  } ,{
+    timestamps: false,
     classMethods: {
       associate: function(models) {
-
+        Plans.hasOne(models.users)
       }
     }
   });
+
   return Plans;
 };
