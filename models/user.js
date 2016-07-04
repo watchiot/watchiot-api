@@ -11,6 +11,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Users.hasMany(models.emails)
+        Users.belongsTo(models.api_keys)
       }
     }
   });

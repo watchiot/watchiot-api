@@ -4,11 +4,10 @@ module.exports = function(sequelize, DataTypes) {
     id: { type: DataTypes.INTEGER, primaryKey: true },
     api_key: DataTypes.STRING
   }, {
-    underscored: true
-  }, {
     classMethods: {
       associate: function(models) {
-        
+        console.log('called')
+        ApiKeys.hasOne(models.users)
       }
     }
   });
