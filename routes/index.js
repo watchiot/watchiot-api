@@ -4,17 +4,35 @@ var models = require('../models/index');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  models.users.findAll({include: [models.emails, models.api_keys, models.plans ]})
-      .then(function(users) {
-    res.json(users);
-  });
-
+  res.render('index');
 });
 
 router.post('/', function(req, res, next) {
   var auth = req.header("Authorization")
+  var username_apikey = auth.split(" ");
 
-  res.json({'auth': auth})
+  if(username_apikey.length !== 2)
+  {
+    res.status(400).send('Bad request!');
+    return;
+  }
+
+  models.users.findOne({
+    where: {username: username_apikey[0]}
+  })
+  .then(function(user) {
+    user.getApi_key().then(function(apiKey) {
+      if(apiKey.api_key !== username_apikey[1])
+      {
+        res.status(400).send('Bad request!');
+        return;
+      }
+
+      var email = "";
+      var response = "{\"hello\": \"Hello " + user.username + " your principal email is " + email + "\"}";
+      res.json(response);
+    });
+  });
 });
 
 module.exports = router;
