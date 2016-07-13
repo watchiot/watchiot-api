@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 
 var helmet = require('helmet');
+var auth = require('./middlewares/auth');
 
 var app = express();
 // Helmet can help protect your app from some well-known web vulnerabilities by setting HTTP headers appropriately.
@@ -25,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(auth);
 app.use('/', routes);
 
 // catch 404 and forward to error handler
