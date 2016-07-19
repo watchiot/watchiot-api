@@ -8,8 +8,15 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-    var email = req.user.emails[0]; // the principal email object
-    res.json("{\"hello\": \"Hi " + req.user.username + " your principal email is " + email.email + "\"}");
+    // the principal email object
+    var email = req.user.emails[0];
+
+    var payload =
+        "{" +
+        "\"hello\": \"Hi " + req.user.username + " your principal email is " + email.email +
+        "\"}";
+
+    res.json(payload);
 });
 
 module.exports = router;

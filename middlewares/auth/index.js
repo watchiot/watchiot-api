@@ -1,4 +1,13 @@
 var models = require('../../models/index');
+var client = require('redis');
+
+var env = process.env.NODE_ENV || 'development';
+if(env === 'production') {
+    client = client.createClient(process.env.REDIS_URL);
+}
+else{
+    client = client.createClient();
+}
 
 function findUser(arrUserAndApikey, fUserAuth) {
 
