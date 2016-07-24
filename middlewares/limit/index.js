@@ -1,5 +1,6 @@
 var client = require('redis');
-var express = require('express')
+var express = require('express');
+var Error = require('../../data/error');
 
 var env = process.env.NODE_ENV || 'development';
 if(env === 'production') {
@@ -19,7 +20,6 @@ module.exports = function() {
             opts.lookup = Array.isArray(opts.lookup) ? opts.lookup : [opts.lookup]
             opts.onRateLimited = typeof opts.onRateLimited === 'function' ? opts.onRateLimited : function (req, res, next) {
                 res.status(429).json(JSON.stringify(new Error(429, 'Rate limit exceeded')));
-                console.log(res._headers);
             }
             var lookups = opts.lookup.map(function (item) {
                 return item + ':' + item.split('.').reduce(function (prev, cur) {
