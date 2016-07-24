@@ -37,6 +37,7 @@ function authSplit(authHeader) {
 
 module.exports = {
     auth: function (req, res, next) {
+        if(req.url === '/' && req.method === 'GET') return next();
         var arrUserAndApikey = authSplit(req.header("Authorization"));
 
         if (arrUserAndApikey.length !== 2) {
@@ -50,6 +51,8 @@ module.exports = {
             });
     },
     isAuth: function (req, res, next) {
+        if(req.url === '/' && req.method === 'GET') return next();
+
         if(req.user){
             next();
         } else {
