@@ -1,4 +1,5 @@
 var models = require('../../models/index');
+var Error = require('../../data/error');
 var client = require('redis');
 
 var env = process.env.NODE_ENV || 'development';
@@ -32,6 +33,9 @@ function findUser(arrUserAndApikey, fUserAuth) {
 
 function authSplit(authHeader) {
     // format: {USERNAME} {API_KEY}
+    if(authHeader === undefined){
+        return "";
+    }
     return authHeader.split(" ");
 }
 
@@ -41,7 +45,7 @@ module.exports = {
         var arrUserAndApikey = authSplit(req.header("Authorization"));
 
         if (arrUserAndApikey.length !== 2) {
-            res.status(400).send('BAD REQUEST');
+            res.status(400).json(JSON.stringify(new Error(400, 'BAD REQUEST')));
             return;
         }
 
@@ -56,7 +60,7 @@ module.exports = {
         if(req.user){
             next();
         } else {
-            res.status(401).send('UNAUTHORIZED');
+            res.status(401).json(JSON.stringify(new Error(401, 'UNAUTHORIZED')));
         }
     }
 }

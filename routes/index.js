@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var models = require('../models/index');
+var Ok = require('../data/ok');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -9,14 +10,9 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
     // the principal email object
-    var email = req.user.emails[0];
-
-    var payload =
-        "{" +
-        "\"hello\": \"Hi " + req.user.username + " your principal email is " + email.email +
-        "\"}";
-
-    res.json(payload);
+    var principalEmail = req.user.emails[0];
+    var payload = 'Hi ' + req.user.username + ' your principal email is ' + principalEmail.email;
+    res.json(JSON.stringify(new Ok({}, payload)));
 });
 
 module.exports = router;
