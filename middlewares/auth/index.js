@@ -2,6 +2,14 @@ var models = require('../../models/index');
 var Error = require('../../data/error');
 var limiter = require('../../middlewares/limit')();
 
+var middleware = limiter({
+    path: '*',
+    method: 'all',
+    lookup: ['connection.remoteAddress'],
+    total: 5, // 10 requests per three minutes
+    expire: 1000 * 60 * 3 //expire in three minute
+});
+
 function findUser(arrUserAndApikey, fUserAuth) {
 
      // find user with username = arrUserAndApikey[0] and api_key = arrUserAndApikey[1]
@@ -21,7 +29,7 @@ function findUser(arrUserAndApikey, fUserAuth) {
         .then(function (user) {
             fUserAuth(user);
         });
-};
+}
 
 function authSplit(authHeader) {
     // format: {USERNAME} {API_KEY}
@@ -42,29 +50,22 @@ auth: function (req, res, next) {
             return;
         }
 
-        findUser(arrUserAndApikey, function (user) {
-                req.user = user;
-                next();
-            });
+        // apply rate limit for bad username or apikey, kick ass brute force!!
+        middleware(req, res, next, function(){
+            if(res.statusCode !== 429){
+                // if not over rate limit, find the user
+                findUser(arrUserAndApikey, function (user) {
+                    req.user = user;
+                    next();
+                });
+            }
+        });
     },
     isAuth: function (req, res, next) {
         if((req.url === '/' && req.method === 'GET') || req.user){
             return next();
         }
 
-        // apply rate limit for bad username or apikey, kick ass brute force!!
-        var middleware = limiter({
-            path: '*',
-            method: 'all',
-            lookup: ['connection.remoteAddress'],
-            total: 5, // 10 requests per three minutes
-            expire: 1000 * 60 * 3 //expire in three minute
-        });
-
-        middleware(req, res, next, function(){
-            if(res.statusCode !== 429){
-                res.status(401).json(JSON.stringify(new Error(401, 'UNAUTHORIZED')));
-            }
-        });
+        res.status(401).json(JSON.stringify(new Error(401, 'UNAUTHORIZED')));        
     }
-}
+};
