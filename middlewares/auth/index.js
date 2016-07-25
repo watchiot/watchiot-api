@@ -48,24 +48,23 @@ auth: function (req, res, next) {
             });
     },
     isAuth: function (req, res, next) {
-        if(req.url === '/' && req.method === 'GET') return next();
-
-        if(req.user){
-            next();
-        } else {            
-            var middleware = limiter({
-                path: '*',
-                method: 'all',
-                lookup: ['connection.remoteAddress'],                
-                total: 10, // 10 requests per minutes                
-                expire: 1000 * 60 //expire in one minute
-            });
-
-            middleware(req, res, next, function(){
-                if(res.statusCode !== 429){
-                    res.status(401).json(JSON.stringify(new Error(401, 'UNAUTHORIZED')));
-                }
-            });
+        if((req.url === '/' && req.method === 'GET') || req.user){
+            return next();
         }
+
+        // apply rate limit for bad username or apikey, kick ass brute force!!
+        var middleware = limiter({
+            path: '*',
+            method: 'all',
+            lookup: ['connection.remoteAddress'],
+            total: 5, // 10 requests per three minutes
+            expire: 1000 * 60 * 3 //expire in three minute
+        });
+
+        middleware(req, res, next, function(){
+            if(res.statusCode !== 429){
+                res.status(401).json(JSON.stringify(new Error(401, 'UNAUTHORIZED')));
+            }
+        });
     }
 }
