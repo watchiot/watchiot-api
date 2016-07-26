@@ -2,12 +2,12 @@ var models = require('../../models/index');
 var Error = require('../../data/error');
 var limiter = require('../../middlewares/limit')();
 
-var middleware = limiter({
+var limit = limiter({
     path: '*',
     method: 'all',
     lookup: ['connection.remoteAddress'],
-    total: 5, // 10 requests per three minutes
-    expire: 1000 * 60 * 3 //expire in three minute
+    total: 5, // 10 requests per 10 minutes
+    expire: 1000 * 60 * 10 //expire in 10s minute
 });
 
 function findUser(arrUserAndApikey, fUserAuth) {
@@ -50,16 +50,10 @@ auth: function (req, res, next) {
             return;
         }
 
-        // apply rate limit for bad username or apikey, kick ass brute force!!
-        middleware(req, res, next, function(){
-            if(res.statusCode !== 429){
-                // if not over rate limit, find the user
-                findUser(arrUserAndApikey, function (user) {
-                    req.user = user;
-                    next();
-                });
-            }
-        });
+        findUser(arrUserAndApikey, function (user) {
+            req.user = user;
+            limit(req, res, next, user);
+        });        
     },
     isAuth: function (req, res, next) {
         if((req.url === '/' && req.method === 'GET') || req.user){

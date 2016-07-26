@@ -13,7 +13,6 @@ router.post('/', function (req, res, next) {
     var principalEmail = req.user.emails[0];
     var msg = 'Hi ' + req.user.username + ' your principal email is ' + principalEmail.email;
     res.json(JSON.stringify(new Ok({}, msg)));
-    console.log(res._header);
 });
 
 module.exports = router;

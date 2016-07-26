@@ -14,11 +14,12 @@ var app = express();
 
 module.exports = function() {
     return function (opts) {
-        var middleware = function (req, res, next, callback) {
+        var middleware = function (req, res, next, doNext) {
             if (opts.whitelist && opts.whitelist(req)) return next();
             opts.lookup = Array.isArray(opts.lookup) ? opts.lookup : [opts.lookup];
             opts.onRateLimited = typeof opts.onRateLimited === 'function' ? opts.onRateLimited : function (req, res, next) {
                 res.status(429).json(JSON.stringify(new Error(429, 'Rate limit exceeded')));
+                console.log(res._headers);
             };
             var lookups = opts.lookup.map(function (item) {
                 return item + ':' + item.split('.').reduce(function (prev, cur) {
@@ -44,6 +45,11 @@ module.exports = function() {
 
                 // do not allow negative remaining
                 limit.remaining = Math.max(Number(limit.remaining) - 1, -1);
+                if (doNext && limit.remaining >= 0)
+                {
+                    return next();
+                }
+
                 db.set(key, JSON.stringify(limit), 'PX', opts.expire, function (e) {
                     if (!opts.skipHeaders) {
                         res.set('X-RateLimit-Limit', limit.total);
@@ -53,15 +59,14 @@ module.exports = function() {
 
                     if (limit.remaining >= 0)
                     {
-                        return callback();
+                        return next();
                     }
-                    var after = (limit.reset - Date.now()) / 1000;
 
+                    var after = (limit.reset - Date.now()) / 1000;
                     if (!opts.skipHeaders) res.set('Retry-After', after);
 
                     opts.onRateLimited(req, res, next);
                 })
-
             })
         };
         if (typeof(opts.lookup) === 'function') {
