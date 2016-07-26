@@ -6,7 +6,7 @@ var limit = limiter({
     path: '*',
     method: 'all',
     lookup: ['connection.remoteAddress'],
-    total: 5, // 10 requests per 10 minutes
+    total: 10, // 10 requests per 10 minutes
     expire: 1000 * 60 * 10 //expire in 10s minute
 });
 
