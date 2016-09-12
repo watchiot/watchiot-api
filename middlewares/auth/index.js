@@ -1,14 +1,5 @@
 var models = require('../../models/index');
 var Error = require('../../data/error');
-var limiter = require('../../middlewares/limit')();
-
-var limit = limiter({
-    path: '*',
-    method: 'all',
-    lookup: ['connection.remoteAddress'],
-    total: 10, // 10 requests per 10 minutes
-    expire: 1000 * 60 * 10 //expire in 10s minute
-});
 
 function findUser(arrUserAndApikey, fUserAuth) {
 
@@ -52,7 +43,15 @@ auth: function (req, res, next) {
 
         findUser(arrUserAndApikey, function (user) {
             req.user = user;
-            limit(req, res, next, user);
+            // limit global configuration
+            // call the limit middleware
+            return next({
+                path: '*',
+                method: 'all',
+                lookup: ['connection.remoteAddress'],
+                total: 10, // 10 requests per 10 minutes
+                expire: 1000 * 60 * 10 //expire in 10s minute
+            });
         });        
     },
     isAuth: function (req, res, next) {
