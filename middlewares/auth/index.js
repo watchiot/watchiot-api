@@ -10,19 +10,19 @@ function findUser(userAndApikey, fUserAuth) {
     var apiKey   = userAndApikey[1];
 
     models.users.findOne({
-            include: [
-                {
-                    model: models.api_keys,
-                    where: { api_key: apiKey}
-                },{
-                    model: models.emails,
-                    where: { primary: true }
-                }],
-            where: {username: username}
-        })
-        .then(function (user) {
-            fUserAuth(user);
-        });
+        include: [
+            {
+                model: models.api_keys,
+                where: { api_key: apiKey}
+            },{
+                model: models.emails,
+                where: { primary: true }
+            }],
+        where: {username: username}
+    })
+    .then(function (user) {
+        fUserAuth(user);
+    });
 }
 
 function getUserAndApiKey(authHeader) {

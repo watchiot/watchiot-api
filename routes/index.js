@@ -22,10 +22,9 @@ router.use('/:space/:project', project.findSpaceAndProject);
 router.post('/:space/:project', function (req, res) {
 
     var user    = req.user;
-    var space   = req.space;
     var project = req.project;
 
-    console.log(space + '-' + project + '-' + user.username);
+    console.log(project.name + '-' + user.username);
     res.json(JSON.stringify(new Ok('all is fine', {})));
 });
 

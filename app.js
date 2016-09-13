@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// My middlewares
+// custom middlewares
 app.use(auth.auth);
 app.use(limiter.limit);
 app.use(auth.isAuth);
