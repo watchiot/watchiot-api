@@ -1,5 +1,4 @@
 var client = require('redis');
-var express = require('express');
 var Error = require('../../data/error');
 
 var env = process.env.NODE_ENV || 'development';
@@ -10,16 +9,25 @@ else{
     db = client.createClient();
 }
 
-var app = express();
-
 module.exports = {
-    limit: function (opts, req, res, next) {
+    limit: function (req, res, next) {
+        //TODO: set by configuration
+        opts = {
+            path: '*',
+            method: 'all',
+            lookup: ['connection.remoteAddress'],
+            total: 10, // 10 requests per 10 minutes
+            expire: 1000 * 60 * 10 //expire in 10s minute
+        };
+
         if (opts.whitelist && opts.whitelist(req)) {
             return next();
         }
         opts.lookup = Array.isArray(opts.lookup) ? opts.lookup : [opts.lookup];
-        opts.onRateLimited = typeof opts.onRateLimited === 'function' ? opts.onRateLimited : function (req, res, next) {
-            res.status(429).json(JSON.stringify(new Error(429, 'Rate limit exceeded')));
+        opts.onRateLimited = typeof opts.onRateLimited === 'function' ? opts.onRateLimited : function (req, res) {
+            res.status(429).json(JSON.stringify(new Error(429, 'Rate limit exceeded', {
+                description: "You have to wait for around 10 min"
+            })));
             //console.log(res._headers);
         };
         var lookups = opts.lookup.map(function (item) {

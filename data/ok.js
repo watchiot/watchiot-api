@@ -1,4 +1,4 @@
-module.exports = function Ok(data, msg){
-    this.data = data;
+module.exports = function Ok(msg, data){
     this.msg = msg;
+    this.data = data;
 }
