@@ -14,7 +14,6 @@ var findProject = function(userId, nameSpace, nameProject, fProject){
 };
 
 module.exports = {
-
     project: function (req, res, next) {
         var userId = req.user.id;
 
@@ -28,5 +27,14 @@ module.exports = {
                 description: 'The Namespace or Project name does not exist.'
             })));
         });
+    },
+    limit: function(req, res, next) {
+        return next();
+    },
+    metric: function(req, res, next) {
+        return next();
+    },
+    notif: function(req, res, next) {
+        return next();
     }
 };

@@ -16,10 +16,12 @@ router.post('/', function (req, res) {
     res.json(JSON.stringify(new Ok(msg, {})));
 });
 
-// middleware to search the project
-router.use('/:space/:project', project.project);
-
-router.post('/:space/:project', function (req, res) {
+router.post('/:space/:project',
+    project.project,
+    project.limit,
+    project.metric,
+    project.notif,
+    function (req, res) {
 
     var user    = req.user;
     var project = req.project;
