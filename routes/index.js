@@ -16,8 +16,8 @@ router.post('/', function (req, res) {
     res.json(JSON.stringify(new Ok(msg, {})));
 });
 
-// middleware to search the space and the project
-router.use('/:space/:project', project.findSpaceAndProject);
+// middleware to search the project
+router.use('/:space/:project', project.project);
 
 router.post('/:space/:project', function (req, res) {
 

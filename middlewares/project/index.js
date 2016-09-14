@@ -1,39 +1,32 @@
 var models = require('../../models/index');
 var Error = require('../../data/error');
 
-var findProject = function(userId, nameSpace, nameProject){
-    /*models.users.findOne({
+var findProject = function(userId, nameSpace, nameProject, fProject){
+    models.projects.findOne({
         include: [
             {
-                model: models.api_keys,
-                where: { api_key: apiKey}
-            },{
-                model: models.emails,
-                where: { primary: true }
+                model: models.spaces,
+                where: { name: nameSpace}
             }],
-        where: {username: username}
+        where: {name: nameProject, user_id: userId}
     })
-    .then(function (user) {
-        fUserAuth(user);
-    });*/
+    .then(fProject);
 };
 
 module.exports = {
 
-    findSpaceAndProject: function (req, res, next) {
-        var userId      = req.user.id;
-        var nameSpace   = req.params.space;
-        var nameProject = req.params.project;
+    project: function (req, res, next) {
+        var userId = req.user.id;
 
-        var project = findProject(userId, nameSpace, nameProject);
-        if(project === undefined) {
+        findProject(userId, req.params.space, req.params.project, function (project) {
+            if(project) {
+                req.project = project;
+                return next();
+            }
+
             res.status(404).json(JSON.stringify(new Error(404, 'NOT FOUND', {
                 description: 'The Space name or Project name does not exist.'
             })));
-            return;
-        }
-
-        req.project = project;
-        next();
+        });
     }
 };
