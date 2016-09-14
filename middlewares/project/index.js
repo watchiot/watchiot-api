@@ -1,4 +1,4 @@
-var models = require('../../models/index');
+var models = require('../../models');
 var Error = require('../../data/error');
 
 var findProject = function(userId, nameSpace, nameProject, fProject){
@@ -25,7 +25,7 @@ module.exports = {
             }
 
             res.status(404).json(JSON.stringify(new Error(404, 'NOT FOUND', {
-                description: 'The Space name or Project name does not exist.'
+                description: 'The Namespace or Project name does not exist.'
             })));
         });
     }
