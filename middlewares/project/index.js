@@ -13,6 +13,10 @@ var findProject = function(userId, nameSpace, nameProject, callbackProject){
     .then(callbackProject);
 };
 
+var findAmountOfReqPerHour = function(userId, callbackReqPerHour){
+    callbackReqPerHour(60);
+};
+
 module.exports = {
     project: function (req, res, next) {
         var userId = req.user.id;
@@ -29,7 +33,16 @@ module.exports = {
         });
     },
     limit: function(req, res, next) {
-        return next();
+        var userId = req.user.id;
+
+        // find max amount of request per project
+        findAmountOfReqPerHour(userId, function(reqPerHour){
+            if(reqPerHour) return next();
+
+            res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
+                description: 'You have to wait for ' + res.get('Retry-After') + " sec"
+            })));
+        });
     },
     metric: function(req, res, next) {
         return next();
