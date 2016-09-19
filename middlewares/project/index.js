@@ -1,7 +1,7 @@
+var Response = require('../../data/response');
 var models = require('../../models');
-var Error = require('../../data/error');
 
-var findProject = function(userId, nameSpace, nameProject, fProject){
+var findProject = function(userId, nameSpace, nameProject, callbackProject){
     models.projects.findOne({
         include: [
             {
@@ -10,7 +10,7 @@ var findProject = function(userId, nameSpace, nameProject, fProject){
             }],
         where: {name: nameProject, user_id: userId}
     })
-    .then(fProject);
+    .then(callbackProject);
 };
 
 module.exports = {
@@ -23,7 +23,7 @@ module.exports = {
                 return next();
             }
 
-            res.status(404).json(JSON.stringify(new Error(404, 'NOT FOUND', {
+            res.status(404).json(JSON.stringify(new Response(404, 'NOT FOUND', {
                 description: 'The Namespace or Project name does not exist.'
             })));
         });

@@ -1,5 +1,5 @@
+var Response = require('../../data/response');
 var client = require('redis');
-var Error = require('../../data/error');
 
 var env = process.env.NODE_ENV || 'development';
 if(env === 'production') {
@@ -25,16 +25,17 @@ module.exports = {
         }
         opts.lookup = Array.isArray(opts.lookup) ? opts.lookup : [opts.lookup];
         opts.onRateLimited = typeof opts.onRateLimited === 'function' ? opts.onRateLimited : function (req, res) {
-            res.status(429).json(JSON.stringify(new Error(429, 'Rate limit exceeded', {
+            res.status(429).json(JSON.stringify(new Response(429, 'Rate limit exceeded', {
                 description: "You have to wait for around 10 min"
             })));
-            //console.log(res._headers);
         };
+
         var lookups = opts.lookup.map(function (item) {
             return item + ':' + item.split('.').reduce(function (prev, cur) {
                     return prev[cur]
                 }, req)
         }).join(':');
+
         var path = opts.path || req.path;
         var method = (opts.method || req.method).toLowerCase();
         var key = 'ratelimit:' + path + ':' + method + ':' + lookups;

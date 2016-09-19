@@ -1,7 +1,9 @@
+
+var Response = require('../data/response');
+
 var express = require('express');
 var router = express.Router();
 var models = require('../models/index');
-var Ok = require('../data/ok');
 var project = require('../middlewares/project');
 
 /* GET home page. */
@@ -13,7 +15,7 @@ router.post('/', function (req, res) {
     // the principal email object
     var principalEmail = req.user.emails[0];
     var msg = 'Hi ' + req.user.username + ' your principal email is ' + principalEmail.email;
-    res.json(JSON.stringify(new Ok(msg, {})));
+    res.json(JSON.stringify(new Response(200, msg, {})));
 });
 
 router.post('/:space/:project',
@@ -27,7 +29,7 @@ router.post('/:space/:project',
     var project = req.project;
 
     console.log(project.name + '-' + user.username);
-    res.json(JSON.stringify(new Ok('all is fine', {})));
+    res.json(JSON.stringify(new Response(200, 'all is fine', {})));
 });
 
 module.exports = router;

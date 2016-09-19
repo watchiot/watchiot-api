@@ -1,11 +1,11 @@
+var Response = require('../../data/response');
 var models = require('../../models/index');
-var Error = require('../../data/error');
 
 /**
  * find user with username = arrUserAndApikey[0] and api_key = arrUserAndApikey[1]
  * and with a primary email
  */
-function findUser(userAndApikey, fUserAuth) {
+function findUser(userAndApikey, callbackUser) {
     var username = userAndApikey[0];
     var apiKey   = userAndApikey[1];
 
@@ -20,9 +20,7 @@ function findUser(userAndApikey, fUserAuth) {
             }],
         where: {username: username}
     })
-    .then(function (user) {
-        fUserAuth(user);
-    });
+    .then(callbackUser);
 }
 
 function getUserAndApiKey(authHeader) {
@@ -37,7 +35,7 @@ module.exports = {
         var userAndApikey = getUserAndApiKey(req.header("Authorization"));
 
         if (userAndApikey.length !== 2) {
-            res.status(400).json(JSON.stringify(new Error(400, 'BAD REQUEST', {
+            res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
                 description: 'Header authentication bad format. It has to be Authorization: {USERNAME} {API_KEY}'
             })));
             return;
@@ -53,7 +51,7 @@ module.exports = {
             return next();
         }
 
-        res.status(401).json(JSON.stringify(new Error(401, 'UNAUTHORIZED', {
+        res.status(401).json(JSON.stringify(new Response(401, 'UNAUTHORIZED', {
             description: 'USERNAME or API_KEY incorrect'
         })));
     }
