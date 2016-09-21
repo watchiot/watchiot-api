@@ -2,15 +2,8 @@ var Response = require('../../data/response');
 var models = require('../../models');
 
 var findProject = function(userId, nameSpace, nameProject, callbackProject){
-    models.projects.findOne({
-        include: [
-            {
-                model: models.spaces,
-                where: { name: nameSpace}
-            }],
-        where: {name: nameProject, user_id: userId}
-    })
-    .then(callbackProject);
+    models.projects.scope({ method: ['findProject', models, userId, nameSpace, nameProject]})
+        .findOne().then(callbackProject);
 };
 
 var findAmountOfReqPerHour = function(userId, callbackReqPerHour){
@@ -20,8 +13,10 @@ var findAmountOfReqPerHour = function(userId, callbackReqPerHour){
 module.exports = {
     project: function (req, res, next) {
         var userId = req.user.id;
+        var namespace = req.params.space;
+        var nameproject = req.params.project;
 
-        findProject(userId, req.params.space, req.params.project, function (project) {
+        findProject(userId, namespace, nameproject, function (project) {
             if(project) {
                 req.project = project;
                 return next();

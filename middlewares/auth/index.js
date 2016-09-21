@@ -1,5 +1,6 @@
 
 var Response = require('../../data/response');
+
 var models = require('../../models/index');
 var client = require('redis');
 
@@ -27,8 +28,10 @@ module.exports = {
 
         if (userAndApikey.length !== 2) {
             res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
-                description: 'Header authentication bad format. It has to be a header Authorization: {USERNAME} {API_KEY}'
+                description: 'Header authentication bad format. ' +
+                'It has to be a header Authorization: {USERNAME} {API_KEY}'
             })));
+
             return;
         }
 
