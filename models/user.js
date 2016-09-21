@@ -14,6 +14,20 @@ module.exports = function(sequelize, DataTypes) {
         Users.belongsTo(models.api_keys)
         Users.belongsTo(models.plans)
       }
+    }, scopes: {
+      findUser: function (models, username, apiKey) {
+        return {
+          include: [
+            {
+              model: models.api_keys,
+              where: { api_key: apiKey}
+            },{
+              model: models.emails,
+              where: { primary: true }
+            }],
+          where: {username: username}
+        }
+      }
     }
   });
 

@@ -7,42 +7,27 @@ var env = process.env.NODE_ENV || 'development';
 db = env === 'production' ? client.createClient(process.env.REDIS_URL)
                           : client.createClient();
 
-/**
- * find user with username = arrUserAndApikey[0] and api_key = arrUserAndApikey[1]
- * and with a primary email
- */
 function findUser(userAndApikey, callbackUser) {
     var username = userAndApikey[0];
     var apiKey   = userAndApikey[1];
 
-    models.users.findOne({
-        include: [
-            {
-                model: models.api_keys,
-                where: { api_key: apiKey}
-            },{
-                model: models.emails,
-                where: { primary: true }
-            }],
-        where: {username: username}
-    })
-    .then(callbackUser);
+    models.users.scope({ method: ['findUser', models, username, apiKey]})
+        .findOne().then(callbackUser);
 }
 
-function getUserAndApiKey(authHeader) {
-    // format: {USERNAME} {API_KEY}
-    if(authHeader === undefined) return "";
-    return authHeader.split(" ");
+function parseAuthHeader(authHeader) {
+    // {USERNAME} {API_KEY}
+    return authHeader === undefined ? "" : authHeader.split(" ");
 }
 
 module.exports = {
     auth: function (req, res, next) {
         if(req.url === '/' && req.method === 'GET') return next();
-        var userAndApikey = getUserAndApiKey(req.header("Authorization"));
+        var userAndApikey = parseAuthHeader(req.header("Authorization"));
 
         if (userAndApikey.length !== 2) {
             res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
-                description: 'Header authentication bad format. It has to be Authorization: {USERNAME} {API_KEY}'
+                description: 'Header authentication bad format. It has to be a header Authorization: {USERNAME} {API_KEY}'
             })));
             return;
         }
