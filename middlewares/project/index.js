@@ -6,8 +6,9 @@ var findProject = function(userId, nameSpace, nameProject, callbackProject){
         .findOne().then(callbackProject);
 };
 
-var findAmountOfReqPerHour = function(userId, callbackReqPerHour){
-    callbackReqPerHour(60);
+var findReqPerHour = function(planId, callbackReqPerHour){
+    models.plan_features.scope({ method: ['findPlanFeature', models, planId, "Request per hours for each project"]})
+        .findOne().then(callbackReqPerHour);
 };
 
 module.exports = {
@@ -27,17 +28,35 @@ module.exports = {
             })));
         });
     },
-    limit: function(req, res, next) {
-        var userId = req.user.id;
+    reqPerhour: function(req, res, next) {
+        var planId = req.user.plan_id;
 
         // find max amount of request per project
-        findAmountOfReqPerHour(userId, function(reqPerHour){
-            if(reqPerHour) return next();
+        findReqPerHour(planId, function(planFeatures){
+            if(planFeatures && planFeatures.value){
+                req.reqPerHour = planFeatures.value;
+                return next();
+            }
+
+            res.status(500).json(JSON.stringify(new Response(500, 'EXCEPTION', {})));
+        });
+    },
+    limit: function(req, res, next) {
+        var reqPerHour = req.reqPerHour;
+        console.log(reqPerHour);
+        // find max amount of request per project
+        /*findAmountOfReqPerHour(planId, function(planFeatures){
+            if(planFeatures && planFeatures.value){
+                req.reqPerHour = planFeatures.value;
+                return next();
+            }
 
             res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
                 description: 'You have to wait for ' + res.get('Retry-After') + " sec"
             })));
-        });
+        });*/
+
+        return next();
     },
     metric: function(req, res, next) {
         return next();

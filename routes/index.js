@@ -19,7 +19,7 @@ router.post('/', function (req, res) {
 });
 
 router.post('/:space/:project',
-    project.project, project.limit,
+    project.project, project.reqPerhour, project.limit,
     project.metric, project.notif,
     function (req, res) {
 
