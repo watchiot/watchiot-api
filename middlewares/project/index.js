@@ -4,11 +4,6 @@ var Response = require('../../data/response');
 var models = require('../../models');
 var helper = require('../../helper');
 
-var findReqPerHour = function(planId, callbackReqPerHour){
-    models.plan_features.scope({ method: ['findPlanFeature', models, planId, "Request per hours for each project"]})
-        .findOne().then(callbackReqPerHour);
-};
-
 module.exports = {
     project: function (req, res, next) {
         var userId = req.user.id;
@@ -16,7 +11,7 @@ module.exports = {
         var nameproject = req.params.project;
 
         models.projects.findProject(models, userId, namespace, nameproject, function (project) {
-            if(project) {
+            if (project) {
                 req.project = project;
                 return next();
             }
@@ -27,12 +22,12 @@ module.exports = {
         });
 
     },
-    reqPerhour: function(req, res, next) {
+    reqPerhour: function (req, res, next) {
         var planId = req.user.plan_id;
 
         // find max amount of request per project
-        findReqPerHour(planId, function(planFeatures){
-            if(planFeatures && planFeatures.value){
+        models.plan_features.findReqPerHour(models, planId, function (planFeatures) {
+            if (planFeatures && planFeatures.value) {
                 req.reqPerHour = planFeatures.value;
                 return next();
             }
@@ -40,7 +35,7 @@ module.exports = {
             res.status(500).json(JSON.stringify(new Response(500, 'EXCEPTION', {})));
         });
     },
-    limit: function(req, res, next) {
+    limit: function (req, res, next) {
         var reqPerHour = req.reqPerHour;
 
         helper.limit(req, res, next, {
@@ -55,10 +50,10 @@ module.exports = {
             }
         });
     },
-    metric: function(req, res, next) {
+    metric: function (req, res, next) {
         return next();
     },
-    notif: function(req, res, next) {
+    notif: function (req, res, next) {
         return next();
     }
 };

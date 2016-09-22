@@ -8,6 +8,10 @@ var db = env === 'production' ? client.createClient(process.env.REDIS_URL)
     : client.createClient();
 
 module.exports = {
+    parseAuthHeader: function(authHeader){
+        // {USERNAME} {API_KEY}
+        return authHeader === undefined ? "" : authHeader.split(" ");
+    },
     limit: function (req, res, next, opts) {
         opts.onRateLimited = typeof opts.onRateLimited === 'function' ? opts.onRateLimited : function (req, res) {
             res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
@@ -46,7 +50,7 @@ module.exports = {
                 return next();
             }
 
-            db.set(key, JSON.stringify(limit), 'PX', opts.expire, function (e) {
+            db.set(key, JSON.stringify(limit), 'PX', opts.expire, function () {
                 if (!opts.skipHeaders) {
                     res.set('X-RateLimit-Limit', limit.total);
                     res.set('X-RateLimit-Reset', Math.ceil(limit.reset / 1000)); // UTC epoch seconds

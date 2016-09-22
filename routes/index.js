@@ -1,4 +1,3 @@
-
 var Response = require('../data/response');
 
 var express = require('express');
@@ -23,12 +22,12 @@ router.post('/:space/:project',
     project.metric, project.notif,
     function (req, res) {
 
-    var user    = req.user;
-    var project = req.project;
+        //var user = req.user;
+        var project = req.project;
 
-    var parse = project.parse();
-    console.log(JSON.stringify(parse));
-    res.json(JSON.stringify(new Response(200, 'all is fine', {})));
-});
+        var parse = project.parse();
+        console.log(JSON.stringify(parse));
+        res.json(JSON.stringify(new Response(200, 'all is fine', {})));
+    });
 
 module.exports = router;
