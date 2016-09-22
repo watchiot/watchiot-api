@@ -1,13 +1,8 @@
+'use strict';
 
 var Response = require('../../data/response');
-
 var models = require('../../models/index');
-var limit = require('../../models/limit');
-var client = require('redis');
-
-var env = process.env.NODE_ENV || 'development';
-db = env === 'production' ? client.createClient(process.env.REDIS_URL)
-                          : client.createClient();
+var helper = require('../../helper');
 
 function findUser(userAndApikey, callbackUser) {
     var username = userAndApikey[0];
@@ -42,7 +37,7 @@ module.exports = {
         });        
     },
     limit: function (req, res, next) {
-        limit(req, res, next, {
+        helper.limit(req, res, next, {
             path: '*',
             method: 'all',
             lookup: ['connection.remoteAddress'],

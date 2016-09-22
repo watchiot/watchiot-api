@@ -7,7 +7,7 @@ var basename  = path.basename(module.filename);
 var env       = process.env.NODE_ENV || 'development';
 
 var db = {};
-var ignoreModels = ['limit.js'];
+var ignoreModels = [''];
 
 var config = env === 'production' ?
     require(__dirname + '/../config/production.json')[env] :

@@ -1,6 +1,8 @@
+'use strict';
+
 var Response = require('../../data/response');
 var models = require('../../models');
-var limit = require('../../models/limit');
+var helper = require('../../helper');
 
 var findProject = function(userId, nameSpace, nameProject, callbackProject){
     models.projects.scope({ method: ['findProject', models, userId, nameSpace, nameProject]})
@@ -45,8 +47,8 @@ module.exports = {
     limit: function(req, res, next) {
         var reqPerHour = req.reqPerHour;
 
-        limit(req, res, next, {
-            lookup: [req.user.id, 'connection.remoteAddress'],
+        helper.limit(req, res, next, {
+            lookup: [req.user.id],
             total: reqPerHour, // reqPerHour requests per one hour
             expire: 1000 * 60 * 60, //expire in one hour
             onRateLimited: function (req, res) {
