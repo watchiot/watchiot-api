@@ -1,5 +1,6 @@
 var Response = require('../../data/response');
 var models = require('../../models');
+var limit = require('../../models/limit');
 
 var findProject = function(userId, nameSpace, nameProject, callbackProject){
     models.projects.scope({ method: ['findProject', models, userId, nameSpace, nameProject]})
@@ -43,20 +44,18 @@ module.exports = {
     },
     limit: function(req, res, next) {
         var reqPerHour = req.reqPerHour;
-        console.log(reqPerHour);
-        // find max amount of request per project
-        /*findAmountOfReqPerHour(planId, function(planFeatures){
-            if(planFeatures && planFeatures.value){
-                req.reqPerHour = planFeatures.value;
-                return next();
+
+        limit(req, res, next, {
+            lookup: [req.user.id, 'connection.remoteAddress'],
+            total: reqPerHour, // reqPerHour requests per one hour
+            expire: 1000 * 60 * 60, //expire in one hour
+            onRateLimited: function (req, res) {
+                res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
+                    description: "You limit of request per project is " + reqPerHour + "/hr. " +
+                    "You have to wait for " + res.get('X-Retry-After') + " sec"
+                })));
             }
-
-            res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
-                description: 'You have to wait for ' + res.get('Retry-After') + " sec"
-            })));
-        });*/
-
-        return next();
+        });
     },
     metric: function(req, res, next) {
         return next();

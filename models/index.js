@@ -15,18 +15,19 @@ else{
 
 var db = {};
 
+var ignoreModels = ['limit.js'];
+
+config.define = {underscored: true};
 if (config.use_env_variable) {
-  config.define = {underscored: true};
   var sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  config.define = {underscored: true};
   var sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
 fs
   .readdirSync(__dirname)
   .filter(function(file) {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js') && (ignoreModels.indexOf(file) === -1);
   })
   .forEach(function(file) {
     var model = sequelize['import'](path.join(__dirname, file));
