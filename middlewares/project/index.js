@@ -4,11 +4,6 @@ var Response = require('../../data/response');
 var models = require('../../models');
 var helper = require('../../helper');
 
-var findProject = function(userId, nameSpace, nameProject, callbackProject){
-    models.projects.scope({ method: ['findProject', models, userId, nameSpace, nameProject]})
-        .findOne().then(callbackProject);
-};
-
 var findReqPerHour = function(planId, callbackReqPerHour){
     models.plan_features.scope({ method: ['findPlanFeature', models, planId, "Request per hours for each project"]})
         .findOne().then(callbackReqPerHour);
@@ -20,7 +15,7 @@ module.exports = {
         var namespace = req.params.space;
         var nameproject = req.params.project;
 
-        findProject(userId, namespace, nameproject, function (project) {
+        models.projects.findProject(models, userId, namespace, nameproject, function (project) {
             if(project) {
                 req.project = project;
                 return next();
@@ -30,6 +25,7 @@ module.exports = {
                 description: 'The Namespace or Project name does not exist.'
             })));
         });
+
     },
     reqPerhour: function(req, res, next) {
         var planId = req.user.plan_id;

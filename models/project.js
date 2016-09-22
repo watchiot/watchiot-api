@@ -13,17 +13,7 @@ module.exports = function(sequelize, DataTypes) {
         user_owner_id: DataTypes.INTEGER,
         repo_name: DataTypes.STRING
     }, {
-        instanceMethods: {
-            parse: function() {
-                return YAML.parse(this.configuration);
-            }
-        },
-        classMethods: {
-            associate: function(models) {
-                Projects.belongsTo(models.users);
-                Projects.belongsTo(models.spaces)
-            }
-        }, scopes: {
+        scopes: {
             findProject: function (models, userId, nameSpace, nameProject) {
                 return {
                     include: [
@@ -33,6 +23,22 @@ module.exports = function(sequelize, DataTypes) {
                         }],
                     where: {name: nameProject, user_id: userId}
                 }
+            }
+        },
+        classMethods: {
+            associate: function(models) {
+                Projects.belongsTo(models.users);
+                Projects.belongsTo(models.spaces)
+            },
+            findProject: function(models, userId, nameSpace, nameProject, callbackProject){
+                models.projects.scope({ method: ['findProject', models, userId, nameSpace, nameProject]})
+                    .findOne()
+                    .then(callbackProject);
+            }
+        },
+        instanceMethods: {
+            parse: function() {
+                return YAML.parse(this.configuration);
             }
         }
     });
