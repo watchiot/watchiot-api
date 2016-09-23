@@ -31,8 +31,7 @@ module.exports = {
             }
 
             res.status(404).json(JSON.stringify(new Response(404, 'NOT FOUND', {
-                description: 'The space name or project name does not exist or ' +
-                'the project is not configured correctly.'
+                description: 'The space name or project name does not exist.'
             })));
         });
 

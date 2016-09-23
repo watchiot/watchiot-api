@@ -8,7 +8,7 @@ module.exports = function (sequelize, DataTypes) {
         name: DataTypes.STRING,
         description: DataTypes.TEXT,
         configuration: DataTypes.TEXT,
-        has_errors: DataTypes.BOOLEAN,
+        ready: DataTypes.BOOLEAN,
         status: DataTypes.BOOLEAN,
         user_owner_id: DataTypes.INTEGER,
         repo_name: DataTypes.STRING
