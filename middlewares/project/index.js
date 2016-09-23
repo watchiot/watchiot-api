@@ -12,12 +12,27 @@ module.exports = {
 
         models.projects.findProject(models, userId, namespace, nameproject, function (project) {
             if (project) {
+                if(!project.status){
+                    res.status(420).json(JSON.stringify(new Response(420, 'DISABLED PROJECT', {
+                        description: 'The project is disabled.'
+                    })));
+                    return;
+                }
+
+                if(!project.ready){
+                    res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
+                        description: 'The project yml is not configured correctly. It is empty or contains errors.'
+                    })));
+                    return;
+                }
+
                 req.project = project;
                 return next();
             }
 
             res.status(404).json(JSON.stringify(new Response(404, 'NOT FOUND', {
-                description: 'The Namespace or Project name does not exist.'
+                description: 'The space name or project name does not exist or ' +
+                'the project is not configured correctly.'
             })));
         });
 
@@ -40,7 +55,7 @@ module.exports = {
 
         helper.limit(req, res, next, {
             lookup: [req.user.id],
-            total: reqPerHour, // reqPerHour requests per one hour
+            total: reqPerHour, // allow requests per hour
             expire: 1000 * 60 * 60, //expire in one hour
             onRateLimited: function (req, res) {
                 res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
@@ -51,6 +66,10 @@ module.exports = {
         });
     },
     metric: function (req, res, next) {
+        var project = req.project;
+        var config = project.parse();
+        console.log(config);
+
         return next();
     },
     notif: function (req, res, next) {

@@ -21,7 +21,7 @@ module.exports = function (sequelize, DataTypes) {
                             model: models.spaces,
                             where: {name: nameSpace}
                         }],
-                    where: {name: nameProject, user_id: userId}
+                    where: {name: nameProject, user_id: userId }
                 }
             }
         },
