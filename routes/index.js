@@ -18,15 +18,10 @@ router.post('/', function (req, res) {
 });
 
 router.post('/:space/:project',
-    project.project, project.reqPerhour, project.limit,
-    project.metric, project.notif,
+    project.project, project.status, project.ready,
+    project.reqPerhour, project.limit, project.metric,
+    project.notif,
     function (req, res) {
-
-        //var user = req.user;
-        var project = req.project;
-
-        var parse = project.parse();
-        console.log(JSON.stringify(parse));
         res.json(JSON.stringify(new Response(200, 'all is fine', {})));
     });
 

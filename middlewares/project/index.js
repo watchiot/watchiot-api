@@ -12,20 +12,6 @@ module.exports = {
 
         models.projects.findProject(models, userId, namespace, nameproject, function (project) {
             if (project) {
-                if(!project.status){
-                    res.status(420).json(JSON.stringify(new Response(420, 'DISABLED PROJECT', {
-                        description: 'The project is disabled.'
-                    })));
-                    return;
-                }
-
-                if(!project.ready){
-                    res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
-                        description: 'The project yml is not configured correctly. It is empty or contains errors.'
-                    })));
-                    return;
-                }
-
                 req.project = project;
                 return next();
             }
@@ -34,7 +20,24 @@ module.exports = {
                 description: 'The space name or project name does not exist.'
             })));
         });
+    },
+    status: function(req, res, next) {
+        if(req.project.status){
+            return next();
+        }
 
+        res.status(420).json(JSON.stringify(new Response(420, 'DISABLED PROJECT', {
+            description: 'The project is disabled.'
+        })));
+    },
+    ready: function(req, res, next) {
+        if(req.project.ready){
+            return next();
+        }
+
+        res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
+            description: 'The project yml is not configured correctly. It is empty or contains errors.'
+        })));
     },
     reqPerhour: function (req, res, next) {
         var planId = req.user.plan_id;
@@ -67,7 +70,14 @@ module.exports = {
     metric: function (req, res, next) {
         var project = req.project;
         var config = project.parse();
-        console.log(config);
+
+        var reqDataObj = req.body;
+
+        for(var prop in reqDataObj.params) {
+            if(!config.params.hasOwnProperty(prop)) {
+                console.log(prop);
+            }
+        }
 
         return next();
     },
