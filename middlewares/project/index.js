@@ -68,8 +68,7 @@ module.exports = {
         });
     },
     hasMetric: function (req, res, next) {
-        var reqDataObj = req.body;
-        if(reqDataObj && reqDataObj.params && !helper.isEmpty(reqDataObj.params)) {
+        if(req.body && req.body.params && !helper.isEmpty(req.body.params)) {
             return next();
         }
 
@@ -77,25 +76,8 @@ module.exports = {
             description: "You have to send the metrics"
         })));
     },
-    validMetric: function (req, res, next) {
-        var reqDataObj = req.body;
-        var config = req.project.parse();
-
-        console.log(reqDataObj.params);
-        var errors = {};
-        for(var metric in reqDataObj.params) {
-            if(!config.params.hasOwnProperty(metric)) {
-                errors[metric] = "The metric " + metric + " does not exist into the configuration yml project.";
-            }
-            else {
-                var metricType = config.params[metric];
-                var value = reqDataObj.params[metric];
-                if (typeof value !== metricType) {
-                    errors[metric] = "The value of metric " + metric + " has to be of type " + metricType;
-                }
-            }
-        }
-
+    validMetrics: function (req, res, next) {
+        var errors = req.project.validMetrics(req.body.params);
         if(helper.isEmpty(errors)) {
             return next();
         }

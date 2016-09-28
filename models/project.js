@@ -39,6 +39,34 @@ module.exports = function (sequelize, DataTypes) {
         instanceMethods: {
             parse: function () {
                 return YAML.parse(this.configuration);
+            },
+            findMetrics: function () {
+                var config = this.parse();
+                if(!config){
+                    return {};
+                }
+
+                return config.params;
+            },
+            validMetrics: function (metrics) {
+                var confMetrics = this.findMetrics();
+
+                var errors = {};
+                for(var metric in metrics) {
+                    if(confMetrics.hasOwnProperty(metric)) {
+                        var metricType = confMetrics[metric];
+                        var value = metrics[metric];
+
+                        if (typeof value !== metricType) {
+                            errors[metric] = "The value of metric " + metric + " has to be " + metricType;
+                        }
+                    }
+                    else {
+                        errors[metric] = "The metric " + metric + " does not exist into the configuration yml project.";
+                    }
+                }
+
+                return errors;
             }
         }
     });
