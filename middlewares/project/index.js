@@ -21,7 +21,7 @@ module.exports = {
             })));
         });
     },
-    status: function(req, res, next) {
+    isStatus: function(req, res, next) {
         if(req.project.status){
             return next();
         }
@@ -30,7 +30,7 @@ module.exports = {
             description: 'The project is disabled.'
         })));
     },
-    ready: function(req, res, next) {
+    isReady: function(req, res, next) {
         if(req.project.ready){
             return next();
         }
@@ -67,18 +67,45 @@ module.exports = {
             }
         });
     },
-    metric: function (req, res, next) {
-        var project = req.project;
-        var config = project.parse();
-
+    hasMetric: function (req, res, next) {
         var reqDataObj = req.body;
+        if(reqDataObj && reqDataObj.params && !helper.isEmpty(reqDataObj.params)) {
+            return next();
+        }
 
-        for(var prop in reqDataObj.params) {
-            if(!config.params.hasOwnProperty(prop)) {
-                console.log(prop);
+        res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
+            description: "You have to send the metrics"
+        })));
+    },
+    validMetric: function (req, res, next) {
+        var reqDataObj = req.body;
+        var config = req.project.parse();
+
+        console.log(reqDataObj.params);
+        var errors = {};
+        for(var metric in reqDataObj.params) {
+            if(!config.params.hasOwnProperty(metric)) {
+                errors[metric] = "The metric " + metric + " does not exist into the configuration yml project.";
+            }
+            else {
+                var metricType = config.params[metric];
+                var value = reqDataObj.params[metric];
+                if (typeof value !== metricType) {
+                    errors[metric] = "The value of metric " + metric + " has to be of type " + metricType;
+                }
             }
         }
 
+        if(helper.isEmpty(errors)) {
+            return next();
+        }
+
+        res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
+            description: "Errors into the metrics.",
+            fields: errors
+        })));
+    },
+    saveMetric: function (req, res, next) {
         return next();
     },
     notif: function (req, res, next) {
