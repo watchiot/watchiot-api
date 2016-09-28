@@ -40,25 +40,18 @@ module.exports = function (sequelize, DataTypes) {
             parse: function () {
                 return YAML.parse(this.configuration);
             },
-            findMetrics: function () {
-                var config = this.parse();
-                if(!config){
-                    return {};
-                }
-
-                return config.params;
-            },
             validMetrics: function (metrics) {
-                var confMetrics = this.findMetrics();
+                var config = this.parse();
+                var configMetrics = config.metrics;
 
                 var errors = {};
                 for(var metric in metrics) {
-                    if(confMetrics.hasOwnProperty(metric)) {
-                        var metricType = confMetrics[metric];
-                        var value = metrics[metric];
+                    if(configMetrics.hasOwnProperty(metric)) {
+                        var metricType = configMetrics[metric];
+                        var metricValue = metrics[metric];
 
-                        if (typeof value !== metricType) {
-                            errors[metric] = "The value of metric " + metric + " has to be " + metricType;
+                        if (typeof metricValue !== metricType) {
+                            errors[metric] = "The value type of metric " + metric + " has to be " + metricType;
                         }
                     }
                     else {

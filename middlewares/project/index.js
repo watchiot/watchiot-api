@@ -68,7 +68,7 @@ module.exports = {
         });
     },
     hasMetric: function (req, res, next) {
-        if(req.body && req.body.params && !helper.isEmpty(req.body.params)) {
+        if(req.body && req.body.metrics && !helper.isEmpty(req.body.metrics)) {
             return next();
         }
 
@@ -77,7 +77,7 @@ module.exports = {
         })));
     },
     validMetrics: function (req, res, next) {
-        var errors = req.project.validMetrics(req.body.params);
+        var errors = req.project.validMetrics(req.body.metrics);
         if(helper.isEmpty(errors)) {
             return next();
         }
