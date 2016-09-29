@@ -1,8 +1,5 @@
 'use strict';
 
-var evaluate = require('static-eval');
-var parse = require('esprima').parse;
-
 var Response = require('../../data/response');
 var models = require('../../models');
 var helper = require('../../helper');
@@ -80,7 +77,7 @@ module.exports = {
         })));
     },
     validMetrics: function (req, res, next) {
-        var errors = req.project.validMetrics(req.body.metrics);
+        var errors = req.project.valideMetrics(req.body.metrics);
         if(helper.isEmpty(errors)) {
             return next();
         }
@@ -90,27 +87,20 @@ module.exports = {
             fields: errors
         })));
     },
-    metric: function (req, res, next) {
-        var isSave = false;
-
-        var config = req.project.parse();
-        for(var status in config) {
-            if(status !== "metrics" && status !== "default") {
-                var src = config[status].when;
-                var ast = parse(src).body[0].expression;
-
-                if(evaluate(ast, req.body.metrics)) {
-                    req.project.saveMetrics(status, req.body.metrics);
-                    isSave = true;
-                    break;
-                }
-            }
-        }
-
-        if (!isSave) {
-            req.project.saveMetrics(config["default"], req.body.metrics);
-        }
-
+    evaluateMetrics: function (req, res, next) {
+        req.project.evaluateMetrics(req.body.metrics,
+            function (statusMetric) {
+                req.statusMetric = statusMetric;
+                return next();
+            },
+            function (err) {
+                res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
+                    description: 'The project yml is not configured correctly.'
+                })));
+            });
+    },
+    saveMetrics: function (req, res, next) {
+        req.project.saveMetrics(req.statusMetric, req.body.metrics);
         return next();
     },
     notif: function (req, res, next) {

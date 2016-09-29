@@ -1,6 +1,8 @@
 'use strict';
 
 var YAML = require('yamljs');
+var evaluate = require('static-eval');
+var parse = require('esprima').parse;
 
 module.exports = function (sequelize, DataTypes) {
     var Projects = sequelize.define('projects', {
@@ -40,7 +42,7 @@ module.exports = function (sequelize, DataTypes) {
             parse: function () {
                 return YAML.parse(this.configuration);
             },
-            validMetrics: function (metrics) {
+            valideMetrics: function (metrics) {
                 var config = this.parse();
                 var configMetrics = config.metrics;
 
@@ -60,6 +62,26 @@ module.exports = function (sequelize, DataTypes) {
                 }
 
                 return errors;
+            },
+            evaluateMetrics: function(metrics, callbackSuccess, callbackErrors) {
+                var config = this.parse();
+                for(var status in config) {
+                    if(status !== "metrics" && status !== "default") {
+                        try {
+                            var src = config[status].when;
+                            if(src) {
+                                var ast = parse(src).body[0].expression;
+                                if (evaluate(ast, metrics)) {
+                                    return callbackSuccess(status);
+                                }
+                            }
+                        } catch(err) {
+                            callbackErrors(err);
+                        }
+                    }
+                }
+
+                callbackSuccess(config["default"]);
             },
             saveMetrics: function(status, metrics) {
                 console.log(status);
