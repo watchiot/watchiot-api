@@ -76,7 +76,7 @@ module.exports = function (sequelize, DataTypes) {
                                 }
                             }
                         } catch(err) {
-                            callbackErrors(err);
+                            return callbackErrors(err);
                         }
                     }
                 }
