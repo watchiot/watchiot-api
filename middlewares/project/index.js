@@ -1,5 +1,8 @@
 'use strict';
 
+var evaluate = require('static-eval');
+var parse = require('esprima').parse;
+
 var Response = require('../../data/response');
 var models = require('../../models');
 var helper = require('../../helper');
@@ -87,7 +90,27 @@ module.exports = {
             fields: errors
         })));
     },
-    saveMetric: function (req, res, next) {
+    metric: function (req, res, next) {
+        var isSave = false;
+
+        var config = req.project.parse();
+        for(var status in config) {
+            if(status !== "metrics" && status !== "default") {
+                var src = config[status].when;
+                var ast = parse(src).body[0].expression;
+
+                if(evaluate(ast, req.body.metrics)) {
+                    req.project.saveMetrics(status, req.body.metrics);
+                    isSave = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isSave) {
+            req.project.saveMetrics(config["default"], req.body.metrics);
+        }
+
         return next();
     },
     notif: function (req, res, next) {

@@ -60,6 +60,10 @@ module.exports = function (sequelize, DataTypes) {
                 }
 
                 return errors;
+            },
+            saveMetrics: function(status, metrics) {
+                console.log(status);
+                console.log(JSON.stringify(metrics));
             }
         }
     });
