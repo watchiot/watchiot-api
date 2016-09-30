@@ -39,6 +39,18 @@ module.exports = {
             description: 'The project yml is not configured correctly. It is empty or contains errors.'
         })));
     },
+    validIp: function(req, res, next) {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        req.project.validIp(ip, function (valid) {
+            if(valid) {
+                return next();
+            }
+
+            res.status(420).json(JSON.stringify(new Response(420, 'IP RESTRICTION', {
+                description: 'You are using an IP that it is not specified in the project yml.'
+            })));
+        });
+    },
     reqPerhour: function (req, res, next) {
         var planId = req.user.plan_id;
 
@@ -77,7 +89,7 @@ module.exports = {
         })));
     },
     validMetrics: function (req, res, next) {
-        var errors = req.project.valideMetrics(req.body.metrics);
+        var errors = req.project.validMetrics(req.body.metrics);
         if(helper.isEmpty(errors)) {
             return next();
         }
@@ -90,10 +102,11 @@ module.exports = {
     evaluateMetrics: function (req, res, next) {
         req.project.evaluateMetrics(req.body.metrics,
             function (statusMetric) {
-                req.statusMetric = statusMetric;
-                return next();
-            },
-            function (err) {
+                if (statusMetric) {
+                    req.statusMetric = statusMetric;
+                    return next();
+                }
+
                 res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
                     description: 'The project yml is not configured correctly.'
                 })));

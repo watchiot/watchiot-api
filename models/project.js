@@ -1,5 +1,6 @@
 'use strict';
 
+var ipaddr = require('ipaddr.js');
 var YAML = require('yamljs');
 var evaluate = require('static-eval');
 var parse = require('esprima').parse;
@@ -42,7 +43,19 @@ module.exports = function (sequelize, DataTypes) {
             parse: function () {
                 return YAML.parse(this.configuration);
             },
-            valideMetrics: function (metrics) {
+            validIp: function(ip, callback) {
+                var ips = this.parse()['ip'];
+
+                ip = ipaddr.IPv6.parse(ip).toIPv4Address();
+                if(ips) {
+                    if(ips.indexOf(ip) === -1) {
+                        return callback(false);
+                    }
+                }
+
+                callback(true);
+            },
+            validMetrics: function (metrics) {
                 var config = this.parse();
                 var configMetrics = config.metrics;
 
@@ -63,7 +76,7 @@ module.exports = function (sequelize, DataTypes) {
 
                 return errors;
             },
-            evaluateMetrics: function(metrics, callbackSuccess, callbackErrors) {
+            evaluateMetrics: function(metrics, callback) {
                 var config = this.parse();
                 for(var status in config) {
                     if(status !== "metrics" && status !== "default") {
@@ -72,16 +85,16 @@ module.exports = function (sequelize, DataTypes) {
                             if(src) {
                                 var ast = parse(src).body[0].expression;
                                 if (evaluate(ast, metrics)) {
-                                    return callbackSuccess(status);
+                                    return callback(status);
                                 }
                             }
                         } catch(err) {
-                            return callbackErrors(err);
+                            return callback();
                         }
                     }
                 }
 
-                callbackSuccess(config["default"]);
+                callback(config["default"]);
             },
             saveMetrics: function(status, metrics) {
                 console.log(status);
