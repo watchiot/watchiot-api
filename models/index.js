@@ -3,6 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var Sequelize = require('sequelize');
+var mongoose   = require('mongoose');
 var basename = path.basename(module.filename);
 var env = process.env.NODE_ENV || 'development';
 
@@ -17,6 +18,10 @@ config.define = {underscored: true};
 var sequelize = config.use_env_variable ?
     new Sequelize(process.env[config.use_env_variable], config) :
     new Sequelize(config.database, config.username, config.password, config);
+
+config.mongodb_url ?
+    mongoose.connect(process.env[config.mongodb_url]) :// connect to our database
+    mongoose.connect('mongodb://127.0.0.1/' + config.database);
 
 fs.readdirSync(__dirname)
     .filter(function (file) {

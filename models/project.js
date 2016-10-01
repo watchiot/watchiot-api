@@ -5,6 +5,8 @@ var YAML = require('yamljs');
 var evaluate = require('static-eval');
 var parse = require('esprima').parse;
 
+var Metric = require('./metric');
+
 module.exports = function (sequelize, DataTypes) {
     var Projects = sequelize.define('projects', {
         id: {type: DataTypes.INTEGER, primaryKey: true},
@@ -97,8 +99,15 @@ module.exports = function (sequelize, DataTypes) {
                 callback(config["default"]);
             },
             saveMetrics: function(status, metrics) {
-                console.log(status);
-                console.log(JSON.stringify(metrics));
+                var metric = new Metric();
+
+                metric.name = status;
+                metric.save(function(err) {
+                    if (err)
+                        console.log(err);
+
+                    console.log('Bear created!');
+                });
             }
         }
     });
