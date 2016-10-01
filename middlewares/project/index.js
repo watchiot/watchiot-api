@@ -99,18 +99,17 @@ module.exports = {
             fields: errors
         })));
     },
-    evaluateMetrics: function (req, res, next) {
-        req.project.evaluateMetrics(req.body.metrics,
-            function (statusMetric) {
-                if (statusMetric) {
-                    req.statusMetric = statusMetric;
-                    return next();
-                }
+    evalMetrics: function (req, res, next) {
+        req.project.evalMetrics(req.body.metrics, function (statusMetric) {
+            if (statusMetric) {
+                req.statusMetric = statusMetric;
+                return next();
+            }
 
-                res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
-                    description: 'The project yml is not configured correctly.'
-                })));
-            });
+            res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
+                description: 'The project yml is not configured correctly.'
+            })));
+        });
     },
     saveMetrics: function (req, res, next) {
         req.project.saveMetrics(req.statusMetric, req.body.metrics);
