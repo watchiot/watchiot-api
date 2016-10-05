@@ -19,9 +19,8 @@ router.post('/', function (req, res) {
 
 router.post('/:space/:project',
     project.project, project.isStatus, project.isReady, project.validIp,
-    project.reqPerhour, project.limit, project.hasMetric,
-    project.validMetrics, project.evalMetrics,
-    project.saveMetrics, project.notif,
+    project.reqPerhour, project.limit, project.hasMetric, project.validMetrics,
+    project.evalMetrics, project.saveMetrics, project.notif,
     function (req, res) {
         res.json(JSON.stringify(new Response(200, 'all is fine', {})));
     });
