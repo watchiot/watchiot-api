@@ -6,6 +6,7 @@ var evaluate = require('static-eval');
 var parse = require('esprima').parse;
 
 var Metric = require('./metric');
+var Notif = require('./notif');
 
 module.exports = function (sequelize, DataTypes) {
     var Projects = sequelize.define('projects', {
@@ -87,7 +88,8 @@ module.exports = function (sequelize, DataTypes) {
                             if(src) {
                                 var ast = parse(src).body[0].expression;
                                 if (evaluate(ast, metrics)) {
-                                    return callback(status);
+                                    var notif = config[status].notif;
+                                    return callback(status, notif);
                                 }
                             }
                         } catch(err) {
@@ -98,15 +100,27 @@ module.exports = function (sequelize, DataTypes) {
 
                 callback(config["default"]);
             },
-            saveMetrics: function(status, metrics, callback) {
+            saveMetrics: function(metrics, status, callback) {
                 var metric = new Metric();
 
-                metric.status = status;
                 metric.metrics = metrics;
+                metric.status = status;
 
                 metric.save(function(err) {
                     if (err) return  callback(false);
                    return callback(true);
+                });
+            },
+            saveNotif: function(notification, metrics, status, callback) {
+                var notif = new Notif();
+
+                notif.notif = notification;
+                notif.metrics = metrics;
+                notif.status = status;
+
+                notif.save(function(err) {
+                    if (err) return  callback(false);
+                    return callback(true);
                 });
             }
         }

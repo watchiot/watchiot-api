@@ -100,9 +100,10 @@ module.exports = {
         })));
     },
     evalMetrics: function (req, res, next) {
-        req.project.evalMetrics(req.body.metrics, function (statusMetric) {
+        req.project.evalMetrics(req.body.metrics, function (statusMetric, notif) {
             if (statusMetric) {
                 req.statusMetric = statusMetric;
+                req.notif = notif;
                 return next();
             }
 
@@ -112,15 +113,23 @@ module.exports = {
         });
     },
     saveMetrics: function (req, res, next) {
-        req.project.saveMetrics(req.statusMetric, req.body.metrics, function (save) {
-            if (save) return next()
+        req.project.saveMetrics(req.body.metrics, req.statusMetric, function (save) {
+            if (!save) {
+                // notif to me
+            }
 
-            res.status(500).json(JSON.stringify(new Response(500, 'AN ERROR SAVING THE METRICS', {
-                description: 'We can not save the metrics.'
-            })));
+            return next();
         });
     },
-    notif: function (req, res, next) {
-        return next();
+    saveNotif: function (req, res, next) {
+        if(!req.notif) return next();
+
+        req.project.saveNotif(req.notif, req.body.metrics, req.statusMetric, function (save) {
+            if (!save) {
+                // notif to me
+            }
+
+            return next();
+        });
     }
 };
