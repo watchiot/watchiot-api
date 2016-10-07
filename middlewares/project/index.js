@@ -112,8 +112,13 @@ module.exports = {
         });
     },
     saveMetrics: function (req, res, next) {
-        req.project.saveMetrics(req.statusMetric, req.body.metrics);
-        return next();
+        req.project.saveMetrics(req.statusMetric, req.body.metrics, function (save) {
+            if (save) return next()
+
+            res.status(500).json(JSON.stringify(new Response(500, 'AN ERROR SAVING THE METRICS', {
+                description: 'We can not save the metrics.'
+            })));
+        });
     },
     notif: function (req, res, next) {
         return next();

@@ -98,15 +98,15 @@ module.exports = function (sequelize, DataTypes) {
 
                 callback(config["default"]);
             },
-            saveMetrics: function(status, metrics) {
+            saveMetrics: function(status, metrics, callback) {
                 var metric = new Metric();
 
-                metric.name = status;
-                metric.save(function(err) {
-                    if (err)
-                        console.log(err);
+                metric.status = status;
+                metric.metrics = metrics;
 
-                    console.log('Bear created!');
+                metric.save(function(err) {
+                    if (err) return  callback(false);
+                   return callback(true);
                 });
             }
         }
