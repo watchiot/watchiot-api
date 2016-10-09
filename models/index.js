@@ -5,23 +5,25 @@ var path = require('path');
 var Sequelize = require('sequelize');
 var mongoose = require('mongoose');
 var basename = path.basename(module.filename);
-var env = process.env.NODE_ENV || 'development';
 
 var db = {};
 var ignoreModels = [''];
 
+var env = process.env.NODE_ENV || 'development';
 var config = env === 'production' ?
     require(__dirname + '/../config/production.json')[env] :
     require(__dirname + '/../config/development.json')[env];
 
 config.define = {underscored: true};
 var sequelize = config.use_env_variable ?
-    new Sequelize(process.env[config.use_env_variable], config) :
+    new Sequelize(process.env[config.database_url], config) :
     new Sequelize(config.database, config.username, config.password, config);
 
-config.mongodb_url ?
+mongoose.Promise = global.Promise;
+
+config.use_env_variable ?
     mongoose.connect(process.env[config.mongodb_url]) :
-    mongoose.connect('mongodb://127.0.0.1/' + config.database);
+    mongoose.connect(config.mongodb_url);
 
 fs.readdirSync(__dirname)
     .filter(function (file) {

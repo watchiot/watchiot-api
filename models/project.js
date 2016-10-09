@@ -4,6 +4,7 @@ var ipaddr = require('ipaddr.js');
 var YAML = require('yamljs');
 var evaluate = require('static-eval');
 var parse = require('esprima').parse;
+var jackrabbit = require('jackrabbit');
 
 var Metric = require('./metric');
 var Notif = require('./notif');
@@ -122,6 +123,12 @@ module.exports = function (sequelize, DataTypes) {
                     if (err) return  callback(false);
                     return callback(true);
                 });
+
+                var rabbit = jackrabbit(process.env.RABBIT_URL || "amqp://127.0.0.1");
+                var exchange = rabbit.default();
+                var hello = exchange.queue({ name: 'task_queue', durable: true });
+
+                exchange.publish({ name: 'Hunter' }, { key: 'task_queue' });
             }
         }
     });

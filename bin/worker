@@ -1,1 +1,19 @@
 #!/usr/bin/env node
+/**
+ * Module dependencies.
+ */
+
+var throng = require('throng');
+var os = require('os');
+var jackrabbit = require('jackrabbit');
+
+var rabbit = jackrabbit(process.env.RABBIT_URL || "amqp://127.0.0.1");
+var exchange = rabbit.default();
+var hello = exchange.queue({ name: 'task_queue', durable: true });
+
+hello.consume(onGreet);
+
+function onGreet(data, ack) {
+    console.log('Hello, ' + data.name + '!');
+    ack();
+}

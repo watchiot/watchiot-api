@@ -1,6 +1,8 @@
 {
     "production": {
-        "use_env_variable": "DATABASE_URL",
-        "mongodb_url": "MONGODB_URI"
+        "use_env_variable": true,
+        "database_url": "DATABASE_URL",
+        "mongodb_url": "MONGODB_URI",
+        "rabbit_url": "CLOUDAMQP_URL"
     }
 }

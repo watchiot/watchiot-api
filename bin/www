@@ -10,12 +10,8 @@ var app = require('../app');
 var debug = require('debug')('watchiot-api:server');
 var http = require('http');
 
-/**
- * Get port from environment and store in Express.
- */
-
-var WORKERS = process.env.WEB_CONCURRENCY || os.cpus().length;
 /** clustering **/
+var WORKERS = process.env.WEB_CONCURRENCY || os.cpus().length;
 throng({
   workers: WORKERS,
   lifetime: Infinity
@@ -23,7 +19,13 @@ throng({
 
 
 function start(id) {
+
   console.log("Started worker " + id);
+
+  /**
+   * Get port from environment and store in Express.
+   */
+
   var port = normalizePort(process.env.PORT || '3002');
   app.set('port', port);
 
