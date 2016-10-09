@@ -22,6 +22,7 @@ module.exports = {
         models.users.findUser(models, username, apiKey, function (user) {
             req.user = user;
 
+            /** define the limit request options **/
             var limitOpts = {
                 path: '*',
                 method: 'all',

@@ -66,13 +66,15 @@ module.exports = {
         // find max amount of request per project
         models.plan_features.findReqPerHour(models, planId, function (planFeatures) {
             if (planFeatures && planFeatures.value) {
+
+                /** define the limit request options per project **/
                 var limitOpts= {
                     lookup: [req.user.id],
                     total: planFeatures.value, // request per hours
                     expire: 1000 * 60 * 60, //expire in one hour
                     onRateLimited: function (req, res) {
                         res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
-                            description: "You limit of request per project is " + reqPerHour + "/hr. " +
+                            description: "You limit request per project is " + planFeatures.value + "/hr. " +
                             "You have to wait for " + res.get('X-Retry-After') + " sec"
                         })));
                     }
