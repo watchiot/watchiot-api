@@ -9,6 +9,7 @@ var routes = require('./routes/index');
 
 var helmet = require('helmet');
 var auth = require('./middlewares/auth');
+var limit = require('./middlewares/limit');
 
 var app = express();
 // Helmet can help protect your app from some well-known web vulnerabilities by setting HTTP headers appropriately.
@@ -28,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // custom middlewares
 app.use(auth.auth);
-app.use(auth.limit);
+app.use(limit.limit);
 app.use(auth.isAuth);
 
 app.use('/', routes);

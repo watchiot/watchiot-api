@@ -10,12 +10,10 @@ module.exports = {
         var userAndApikey = helper.parseAuthHeader(req.header("Authorization"));
 
         if (userAndApikey.length !== 2) {
-            res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
+            return res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
                 description: 'Header authentication bad format. ' +
                 'It has to be a header Authorization: {USERNAME} {API_KEY}'
             })));
-
-            return;
         }
 
         var username = userAndApikey[0];
@@ -23,17 +21,17 @@ module.exports = {
 
         models.users.findUser(models, username, apiKey, function (user) {
             req.user = user;
-            next();
-        });
-    },
-    limit: function (req, res, next) {
-        helper.limit(req, res, next, {
-            path: '*',
-            method: 'all',
-            lookup: ['connection.remoteAddress'],
-            total: 10, // 10 requests per 10 minutes
-            expire: 1000 * 60 * 10, //expire in 10s minute
-            validUser: true
+
+            var limitOpts = {
+                path: '*',
+                method: 'all',
+                lookup: ['connection.remoteAddress'],
+                total: 10, // 10 requests per 10 minutes
+                expire: 1000 * 60 * 10, //expire in 10s minute
+                validUser: true
+            };
+
+            next(limitOpts);
         });
     },
     isAuth: function (req, res, next) {

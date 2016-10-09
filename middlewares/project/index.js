@@ -66,26 +66,22 @@ module.exports = {
         // find max amount of request per project
         models.plan_features.findReqPerHour(models, planId, function (planFeatures) {
             if (planFeatures && planFeatures.value) {
-                req.reqPerHour = planFeatures.value;
-                return next();
+                var limitOpts= {
+                    lookup: [req.user.id],
+                    total: planFeatures.value, // request per hours
+                    expire: 1000 * 60 * 60, //expire in one hour
+                    onRateLimited: function (req, res) {
+                        res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
+                            description: "You limit of request per project is " + reqPerHour + "/hr. " +
+                            "You have to wait for " + res.get('X-Retry-After') + " sec"
+                        })));
+                    }
+                };
+
+                return next(limitOpts);
             }
 
             res.status(500).json(JSON.stringify(new Response(500, 'EXCEPTION', {})));
-        });
-    },
-    limit: function (req, res, next) {
-        var reqPerHour = req.reqPerHour;
-
-        helper.limit(req, res, next, {
-            lookup: [req.user.id],
-            total: reqPerHour, // allow requests per hour
-            expire: 1000 * 60 * 60, //expire in one hour
-            onRateLimited: function (req, res) {
-                res.status(429).json(JSON.stringify(new Response(429, 'RATE LIMIT EXCEEDED', {
-                    description: "You limit of request per project is " + reqPerHour + "/hr. " +
-                    "You have to wait for " + res.get('X-Retry-After') + " sec"
-                })));
-            }
         });
     },
     hasMetric: function (req, res, next) {
