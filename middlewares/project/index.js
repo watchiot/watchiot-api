@@ -1,8 +1,17 @@
 'use strict';
 
+var jackrabbit = require('jackrabbit');
+
 var Response = require('../../data/response');
 var models = require('../../models');
 var helper = require('../../helper');
+
+/** get config env **/
+var config = helper.config();
+
+var rabbit = config.use_env_variable ?
+    jackrabbit(process.env[config.rabbit_url]) :
+    jackrabbit(config.rabbit_url);
 
 module.exports = {
     project: function (req, res, next) {
@@ -114,22 +123,22 @@ module.exports = {
     },
     saveMetrics: function (req, res, next) {
         req.project.saveMetrics(req.body.metrics, req.statusMetric, function (save) {
-            if (!save) {
-                // notif to me
+            if (save) {
+                return next();
             }
-
-            return next();
         });
     },
     saveNotif: function (req, res, next) {
         if(!req.notif) return next();
 
         req.project.saveNotif(req.notif, req.body.metrics, req.statusMetric, function (save) {
-            if (!save) {
-                // notif to me
-            }
+            if (save) {
+                var exchange = rabbit.default();
+                var hello = exchange.queue({ name: 'task_queue', durable: true });
 
-            return next();
+                exchange.publish({ name: 'Hunter' }, { key: 'task_queue' });
+                return next();
+            }
         });
     }
 };

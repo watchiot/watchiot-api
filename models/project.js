@@ -4,19 +4,10 @@ var ipaddr = require('ipaddr.js');
 var YAML = require('yamljs');
 var evaluate = require('static-eval');
 var parse = require('esprima').parse;
-var jackrabbit = require('jackrabbit');
 
+/** Model class **/
 var Metric = require('./metric');
 var Notif = require('./notif');
-
-var helper = require('../helper');
-
-/** get config env **/
-var config = helper.config();
-
-var rabbit = config.use_env_variable ?
-    jackrabbit(process.env[config.rabbit_url]) :
-    jackrabbit(config.rabbit_url);
 
 module.exports = function (sequelize, DataTypes) {
     var Projects = sequelize.define('projects', {
@@ -132,11 +123,6 @@ module.exports = function (sequelize, DataTypes) {
                     if (err) return  callback(false);
                     return callback(true);
                 });
-
-                var exchange = rabbit.default();
-                var hello = exchange.queue({ name: 'task_queue', durable: true });
-
-                exchange.publish({ name: 'Hunter' }, { key: 'task_queue' });
             }
         }
     });
