@@ -27,12 +27,12 @@ function start(id) {
         jackrabbit(config.rabbit_url);
 
     var exchange = rabbit.default();
-    var hello = exchange.queue({name: 'task_queue', durable: true});
+    var queue = exchange.queue({name: 'task_queue', durable: true});
 
-    hello.consume(onGreet);
+    queue.consume(onNotif);
 
-    function onGreet(data, ack) {
-        console.log('Hello, ' + data.name + '!');
+    function onNotif(data, ack) {
+        console.log(data);
         ack();
     }
 }

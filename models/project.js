@@ -59,7 +59,7 @@ module.exports = function (sequelize, DataTypes) {
 
                 callback(true);
             },
-            validMetrics: function (metrics) {
+            validMetrics: function (metrics, callback) {
                 var config = this.parse();
                 var configMetrics = config.metrics;
 
@@ -78,7 +78,7 @@ module.exports = function (sequelize, DataTypes) {
                     }
                 }
 
-                return errors;
+                callback(errors);
             },
             evalMetrics: function(metrics, callback) {
                 var config = this.parse();
@@ -104,24 +104,32 @@ module.exports = function (sequelize, DataTypes) {
             saveMetrics: function(metrics, status, callback) {
                 var metric = new Metric();
 
+                metric.user_id = this.user_id;
+                metric.space_id = this.space_id;
+                metric.project_id = this.id;
+
                 metric.metrics = metrics;
                 metric.status = status;
 
-                metric.save(function(err) {
-                    if (err) return  callback(false);
-                   return callback(true);
+                metric.save(function(err, m) {
+                    if (err) return callback();
+                    return callback(m.id);
                 });
             },
             saveNotif: function(notification, metrics, status, callback) {
                 var notif = new Notif();
 
+                notif.user_id = this.user_id;
+                notif.space_id = this.space_id;
+                notif.project_id = this.id;
+
                 notif.notif = notification;
                 notif.metrics = metrics;
                 notif.status = status;
 
-                notif.save(function(err) {
-                    if (err) return  callback(false);
-                    return callback(true);
+                notif.save(function(err, n) {
+                    if (err) return callback();
+                    return callback(n.id);
                 });
             }
         }

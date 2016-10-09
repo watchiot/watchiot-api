@@ -98,15 +98,16 @@ module.exports = {
         })));
     },
     validMetrics: function (req, res, next) {
-        var errors = req.project.validMetrics(req.body.metrics);
-        if(helper.isEmpty(errors)) {
-            return next();
-        }
+        req.project.validMetrics(req.body.metrics, function(errors){
+            if(helper.isEmpty(errors)) {
+                return next();
+            }
 
-        res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
-            description: "Errors into the metrics.",
-            fields: errors
-        })));
+            res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
+                description: "Errors into the metrics.",
+                fields: errors
+            })));
+        });
     },
     evalMetrics: function (req, res, next) {
         req.project.evalMetrics(req.body.metrics, function (statusMetric, notif) {
@@ -122,8 +123,8 @@ module.exports = {
         });
     },
     saveMetrics: function (req, res, next) {
-        req.project.saveMetrics(req.body.metrics, req.statusMetric, function (save) {
-            if (save) {
+        req.project.saveMetrics(req.body.metrics, req.statusMetric, function (metricId) {
+            if (metricId) {
                 return next();
             }
         });
@@ -131,12 +132,19 @@ module.exports = {
     saveNotif: function (req, res, next) {
         if(!req.notif) return next();
 
-        req.project.saveNotif(req.notif, req.body.metrics, req.statusMetric, function (save) {
-            if (save) {
+        req.project.saveNotif(req.notif, req.body.metrics, req.statusMetric, function (notifId) {
+            if (notifId) {
+                /** queue the notification **/
                 var exchange = rabbit.default();
-                var hello = exchange.queue({ name: 'task_queue', durable: true });
+                exchange.queue({ name: 'task_queue', durable: true });
 
-                exchange.publish({ name: 'Hunter' }, { key: 'task_queue' });
+                exchange.publish({
+                    notifId: notifId,
+                    notif: req.notif,
+                    metric: req.body.metrics
+                },
+                { key: 'task_queue' });
+
                 return next();
             }
         });
