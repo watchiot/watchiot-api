@@ -4,12 +4,13 @@ var Response = require('../data/response');
 var client = require('redis');
 
 var env = process.env.NODE_ENV || 'development';
-var db = env === 'production' ? client.createClient(process.env.REDIS_URL)
-    : client.createClient();
+var db = env === 'production' ?
+    client.createClient(process.env.REDIS_URL) :
+    client.createClient();
 
 module.exports = {
     parseAuthHeader: function(authHeader){
-        // {USERNAME} {API_KEY}
+        /** {USERNAME} {API_KEY} **/
         return authHeader === undefined ? "" : authHeader.split(" ");
     },
     limit: function (req, res, next, opts) {
@@ -75,5 +76,15 @@ module.exports = {
         }
 
         return JSON.stringify(obj) === JSON.stringify({});
+    },
+    int: function (str) {
+        if (!str) return 0;
+        return parseInt(str, 10);
+    },
+    config: function() {
+        var env = process.env.NODE_ENV || 'development';
+        return env === 'production' ?
+            require(__dirname + '../../config/production.json')[env] :
+            require(__dirname + '../../config/development.json')[env];
     }
 };

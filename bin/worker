@@ -6,14 +6,33 @@
 var throng = require('throng');
 var os = require('os');
 var jackrabbit = require('jackrabbit');
+var helper = require('../helper');
 
-var rabbit = jackrabbit(process.env.RABBIT_URL || "amqp://127.0.0.1");
-var exchange = rabbit.default();
-var hello = exchange.queue({ name: 'task_queue', durable: true });
+/** get config env **/
+var config = helper.config();
 
-hello.consume(onGreet);
+/** clustering **/
+var WORKERS = helper.int(process.env.WORKER_CONCURRENCY) || os.cpus().length;
+throng({
+    workers: WORKERS,
+    lifetime: Infinity
+}, start);
 
-function onGreet(data, ack) {
-    console.log('Hello, ' + data.name + '!');
-    ack();
+function start(id) {
+
+    console.log("Started worker " + id);
+
+    var rabbit = config.use_env_variable ?
+        jackrabbit(process.env[config.rabbit_url]) :
+        jackrabbit(config.rabbit_url);
+
+    var exchange = rabbit.default();
+    var hello = exchange.queue({name: 'task_queue', durable: true});
+
+    hello.consume(onGreet);
+
+    function onGreet(data, ack) {
+        console.log('Hello, ' + data.name + '!');
+        ack();
+    }
 }

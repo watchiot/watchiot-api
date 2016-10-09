@@ -1,1 +1,18 @@
 #!/usr/bin/env node
+
+var throng = require('throng');
+var os = require('os');
+var helper = require('../helper');
+
+/** clustering **/
+var WORKERS = helper.int(process.env.WEB_CONCURRENCY) || os.cpus().length;
+throng({
+    workers: WORKERS,
+    lifetime: Infinity
+}, start);
+
+
+function start(id) {
+    console.log("Started scheduler worker " + id);
+}
+

@@ -9,6 +9,15 @@ var jackrabbit = require('jackrabbit');
 var Metric = require('./metric');
 var Notif = require('./notif');
 
+var helper = require('../helper');
+
+/** get config env **/
+var config = helper.config();
+
+var rabbit = config.use_env_variable ?
+    jackrabbit(process.env[config.rabbit_url]) :
+    jackrabbit(config.rabbit_url);
+
 module.exports = function (sequelize, DataTypes) {
     var Projects = sequelize.define('projects', {
         id: {type: DataTypes.INTEGER, primaryKey: true},
@@ -124,7 +133,6 @@ module.exports = function (sequelize, DataTypes) {
                     return callback(true);
                 });
 
-                var rabbit = jackrabbit(process.env.RABBIT_URL || "amqp://127.0.0.1");
                 var exchange = rabbit.default();
                 var hello = exchange.queue({ name: 'task_queue', durable: true });
 

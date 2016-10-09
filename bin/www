@@ -9,9 +9,10 @@ var os = require('os');
 var app = require('../app');
 var debug = require('debug')('watchiot-api:server');
 var http = require('http');
+var helper = require('../helper');
 
 /** clustering **/
-var WORKERS = process.env.WEB_CONCURRENCY || os.cpus().length;
+var WORKERS = helper.int(process.env.WEB_CONCURRENCY) || os.cpus().length;
 throng({
   workers: WORKERS,
   lifetime: Infinity
@@ -20,7 +21,7 @@ throng({
 
 function start(id) {
 
-  console.log("Started worker " + id);
+  console.log("Started web worker " + id);
 
   /**
    * Get port from environment and store in Express.
