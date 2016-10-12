@@ -5,11 +5,9 @@
 
 var throng = require('throng');
 var os = require('os');
-var jackrabbit = require('jackrabbit');
-var helper = require('../helper');
 
-/** get config env **/
-var config = helper.config();
+var helper = require('../helper');
+var rabbit = require('../data/rabbit');
 
 /** clustering **/
 var WORKERS = helper.int(process.env.WORKER_CONCURRENCY) || os.cpus().length;
@@ -19,20 +17,12 @@ throng({
 }, start);
 
 function start(id) {
-
     console.log("Started worker " + id);
 
-    var rabbit = config.use_env_variable ?
-        jackrabbit(process.env[config.rabbit_url]) :
-        jackrabbit(config.rabbit_url);
-
-    var exchange = rabbit.default();
-    var queue = exchange.queue({name: 'task_queue', durable: true});
-
-    queue.consume(onNotif);
-
-    function onNotif(data, ack) {
+    /** consume the notifications **/
+    rabbit.consume(function(data, ack) {
         console.log(data);
         ack();
-    }
+    });
+
 }
