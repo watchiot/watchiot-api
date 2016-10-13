@@ -3,6 +3,7 @@
 var throng = require('throng');
 var os = require('os');
 var helper = require('../helper');
+var CronJob = require('cron').CronJob;
 
 /** clustering **/
 var WORKERS = helper.int(process.env.WEB_CONCURRENCY) || os.cpus().length;
@@ -14,5 +15,9 @@ throng({
 
 function start(id) {
     console.log("Started scheduler worker " + id);
+
+    new CronJob('00 */1 * * * *', function() {
+        console.log('Yo will see this message every minute ' + id);
+    }, null, true, 'America/Los_Angeles');
 }
 
