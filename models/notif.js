@@ -25,14 +25,12 @@ var NotifSchema   = new Schema({
     created: { type: Date, default: Date.now }
 });
 
-// assign a function to the "methods" object of our NotifSchema
-NotifSchema.statics.setProcessed = function(id, callback) {
+// assign a function to the "statics" object of our NotifSchema
+NotifSchema.statics.saveProcessed = function(id, callback) {
     this.findById(id, function (err, notif) {
         notif.processed = true;
-        notif.save(function(err, n) {
-            if (err) return callback();
-            console.log(n.id);
-            return callback(n.id);
+        notif.save(function(err) {
+            err ? callback(false) : callback(true);
         });
     });
 };

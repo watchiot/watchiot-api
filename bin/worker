@@ -23,10 +23,11 @@ function start(id) {
 
     /** consume the notifications **/
     rabbit.consume(function(data, ack) {
-        Notif.setProcessed(data.id, function(id) {
-            if(id) {
-                ack();
-            }
+        /** send the notification to the notification api **/
+
+        /** put the notification as processed on true **/
+        Notif.saveProcessed(data.id, function(save) {
+            if(save) ack();
         });
     });
 }

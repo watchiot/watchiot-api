@@ -112,8 +112,7 @@ module.exports = function (sequelize, DataTypes) {
                 metric.status = status;
 
                 metric.save(function(err, m) {
-                    if (err) return callback();
-                    return callback(m.id);
+                    err ? callback() : callback(m.id);
                 });
             },
             saveNotif: function(notification, metrics, status, callback) {
@@ -128,8 +127,7 @@ module.exports = function (sequelize, DataTypes) {
                 notif.status = status;
 
                 notif.save(function(err, n) {
-                    if (err) return callback();
-                    return callback(n.id);
+                    err ? callback() : callback(n.id);
                 });
             }
         }

@@ -15,7 +15,10 @@ var sequelize = config.use_env_variable ?
     new Sequelize(config.database, config.username, config.password, config);
 
 var db = {};
+
+/** this modules are using mongodb **/
 var ignoreModels = ['metric.js', 'notif.js'];
+
 var basename = path.basename(module.filename);
 fs.readdirSync(__dirname)
     .filter(function (file) {
