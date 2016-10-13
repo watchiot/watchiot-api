@@ -121,7 +121,6 @@ module.exports = {
     },
     saveNotif: function (req, res, next) {
         if(!req.notif) return next();
-
         req.project.saveNotif(req.notif, req.body.metrics, req.statusMetric, function (notifId) {
             if (notifId) {
                 /** queue the notifications **/

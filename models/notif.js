@@ -1,5 +1,17 @@
 
-var mongoose     = require('mongoose');
+var mongoose = require('mongoose');
+
+/** initialize mongoDB **/
+if (mongoose.connection.readyState == 0) {
+    var helper = require('../helper');
+    var config = helper.config();
+
+    mongoose.Promise = global.Promise;
+    config.use_env_variable ?
+        mongoose.connect(process.env[config.mongodb_url]) :
+        mongoose.connect(config.mongodb_url);
+}
+
 var Schema       = mongoose.Schema;
 
 var NotifSchema   = new Schema({
@@ -12,5 +24,17 @@ var NotifSchema   = new Schema({
     processed: { type: Boolean, default: false },
     created: { type: Date, default: Date.now }
 });
+
+// assign a function to the "methods" object of our NotifSchema
+NotifSchema.statics.setProcessed = function(id, callback) {
+    this.findById(id, function (err, notif) {
+        notif.processed = true;
+        notif.save(function(err, n) {
+            if (err) return callback();
+            console.log(n.id);
+            return callback(n.id);
+        });
+    });
+};
 
 module.exports = mongoose.model('Notif', NotifSchema);

@@ -9,6 +9,8 @@ var os = require('os');
 var helper = require('../helper');
 var rabbit = require('../data/rabbit');
 
+var Notif = require('../models/notif');
+
 /** clustering **/
 var WORKERS = helper.int(process.env.WORKER_CONCURRENCY) || os.cpus().length;
 throng({
@@ -21,8 +23,10 @@ function start(id) {
 
     /** consume the notifications **/
     rabbit.consume(function(data, ack) {
-        console.log(data);
-        ack();
+        Notif.setProcessed(data.id, function(id) {
+            if(id) {
+                ack();
+            }
+        });
     });
-
 }

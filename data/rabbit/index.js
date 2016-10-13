@@ -17,7 +17,7 @@ module.exports = {
         exchange.queue({name: 'task_queue', durable: true});
 
         exchange.publish({
-            notifId: notifId,
+            id: notifId,
             notif: notif,
             metric: metrics
         }, {

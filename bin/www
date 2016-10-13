@@ -12,7 +12,7 @@ var http = require('http');
 var helper = require('../helper');
 
 /** clustering **/
-var WORKERS = helper.int(process.env.WEB_CONCURRENCY) || os.cpus().length;
+var WORKERS = helper.int(process.env.CONCURRENCY) || os.cpus().length;
 throng({
   workers: WORKERS,
   lifetime: Infinity
