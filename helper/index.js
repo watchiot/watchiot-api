@@ -20,7 +20,7 @@ module.exports = {
     config: function() {
         var env = process.env.NODE_ENV || 'development';
         return env === 'production' ?
-            require(__dirname + '/../config/production.json')[env] :
-            require(__dirname + '/../config/development.json')[env];
+            require('../config/production.json')[env] :
+            require('../config/development.json')[env];
     }
 };

@@ -1,4 +1,5 @@
-var Response = require('../data/response');
+
+var Response = require('../helper/response');
 
 var express = require('express');
 var router = express.Router();

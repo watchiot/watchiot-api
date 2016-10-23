@@ -1,6 +1,6 @@
 var jackrabbit = require('jackrabbit');
 
-var helper = require('../../helper');
+var helper = require('../helper');
 
 /** get config env **/
 var config = helper.config();

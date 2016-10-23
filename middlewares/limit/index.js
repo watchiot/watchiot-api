@@ -1,6 +1,6 @@
 'use strict';
 
-var Response = require('../../data/response');
+var Response = require('../../helper/response');
 var helper = require('../../helper');
 var client = require('redis');
 

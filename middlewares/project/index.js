@@ -1,9 +1,9 @@
 'use strict';
 
-var Response = require('../../data/response');
+var Response = require('../../helper/response');
+var rabbit = require('../../helper/rabbit');
 var models = require('../../models');
 var helper = require('../../helper');
-var rabbit = require('../../data/rabbit');
 
 module.exports = {
     project: function (req, res, next) {

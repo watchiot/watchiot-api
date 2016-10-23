@@ -7,7 +7,7 @@ var throng = require('throng');
 var os = require('os');
 
 var helper = require('../helper');
-var rabbit = require('../data/rabbit');
+var rabbit = require('../helper/rabbit');
 
 var Notif = require('../models/notif');
 
