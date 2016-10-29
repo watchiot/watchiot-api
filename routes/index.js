@@ -26,17 +26,17 @@ var project = require('../middlewares/project');
 var limit = require('../middlewares/limit');
 
 var middlewares = [
-    project.project,        //
-    project.isStatus,       //
-    project.isReady,        //
-    project.validIp,        //
-    project.reqPerhour,     //
-    limit.limit,            //
-    project.hasMetric,      //
-    project.validMetrics,   //
-    project.evalMetrics,    //
-    project.saveMetrics,    //
-    project.saveNotif       //
+    project.project,        // obtain the Project bundle
+    project.isStatus,       // verify is the project has status (active to receive request) on true
+    project.isReady,        // verify is the project has ready (configuration is correct) on true
+    project.validIp,        // verify is the configuration has defined an IP and if the IP of request is permitted
+    project.reqPerhour,     // obtain the request per hour defined in the user plan
+    limit.limit,            // verify the request per hour and how many request the project has in this hour
+    project.hasMetric,      // verify if the request has metrics
+    project.validMetrics,   // verify if the metrics sending in the request match with the metrics defined in the project
+    project.evalMetrics,    // evaluate the metrics and inject the notification if it has to send one
+    project.saveMetrics,    // save the metrics with his values
+    project.saveNotif       // save the notification if apply
 ];
 
 /** POST api request **/
