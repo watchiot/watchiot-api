@@ -1,4 +1,8 @@
-require('dotenv').config()
+
+// set env variables in development or testd
+if(process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({path: __dirname + '/.env'})
+}
 
 var express = require('express');
 var path = require('path');
