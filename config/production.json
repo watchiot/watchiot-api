@@ -1,6 +1,9 @@
 {
     "production": {
         "use_env_variable": true,
-        "raven_url": "DATABASE_URL"
+        "database_url": "DATABASE_URL",
+        "redis_url": "REDIS_URL",
+        "mongodb_url": "MONGODB_URI",
+        "rabbit_url": "CLOUDAMQP_URL"
     }
 }
