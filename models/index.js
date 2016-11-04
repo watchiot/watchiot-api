@@ -5,14 +5,9 @@ var path = require('path');
 var Sequelize = require('sequelize');
 var helper = require('../helper');
 
-/** obtain config env **/
-var config = helper.config();
-
 /** initialize Sequelize **/
-config.define = {underscored: true};
-var sequelize = config.use_env_variable ?
-    new Sequelize(process.env[config.database_url], config) :
-    new Sequelize(config.database, config.username, config.password, config);
+var config = {"define" : {"underscored": true}};
+var sequelize = new Sequelize(helper.config("database_url"), config);
 
 var db = {};
 

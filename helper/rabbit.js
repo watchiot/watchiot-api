@@ -2,12 +2,7 @@ var jackrabbit = require('jackrabbit');
 
 var helper = require('../helper');
 
-/** get config env **/
-var config = helper.config();
-
-var rabbit = config.use_env_variable ?
-    jackrabbit(process.env[config.rabbit_url]) :
-    jackrabbit(config.rabbit_url);
+var rabbit = jackrabbit(helper.config("rabbit_url"));
 
 module.exports = {
     publish: function (notifId, notif, metrics) {

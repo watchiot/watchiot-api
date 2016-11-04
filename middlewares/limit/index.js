@@ -4,12 +4,7 @@ var Response = require('../../helper/response');
 var helper = require('../../helper');
 var client = require('redis');
 
-/** get config env **/
-var config = helper.config();
-
-var db = config.use_env_variable ?
-    client.createClient(process.env[config.redis_url]) :
-    client.createClient();
+var db = client.createClient(helper.config("redis_url"));
 
 module.exports = {
     limit: function (opts, req, res, next) {
