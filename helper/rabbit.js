@@ -2,7 +2,7 @@ var jackrabbit = require('jackrabbit');
 
 var helper = require('../helper');
 
-var rabbit = jackrabbit(helper.config("rabbit_url"));
+var rabbit = jackrabbit(process.env.CLOUDAMQP_URL);
 
 module.exports = {
     publish: function (notifId, notif, metrics) {
@@ -26,4 +26,4 @@ module.exports = {
         var queue = exchange.queue({name: 'task_queue', durable: true});
         queue.consume(onNotif);
     }
-}
+};

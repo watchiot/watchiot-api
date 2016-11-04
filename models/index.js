@@ -3,11 +3,10 @@
 var fs = require('fs');
 var path = require('path');
 var Sequelize = require('sequelize');
-var helper = require('../helper');
 
 /** initialize Sequelize **/
 var config = {"define" : {"underscored": true}};
-var sequelize = new Sequelize(helper.config("database_url"), config);
+var sequelize = new Sequelize(process.env.DATABASE_URL, config);
 
 var db = {};
 

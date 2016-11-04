@@ -3,13 +3,9 @@ var mongoose = require('mongoose');
 
 /** initialize mongoDB **/
 if (mongoose.connection.readyState == 0) {
-    var helper = require('../helper');
-    var config = helper.config();
 
     mongoose.Promise = global.Promise;
-    config.use_env_variable ?
-        mongoose.connect(process.env[config.mongodb_url]) :
-        mongoose.connect(config.mongodb_url);
+    mongoose.connect(process.env.MONGODB_URI);
 }
 
 var Schema       = mongoose.Schema;

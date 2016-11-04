@@ -1,10 +1,9 @@
 'use strict';
 
 var Response = require('../../helper/response');
-var helper = require('../../helper');
 var client = require('redis');
 
-var db = client.createClient(helper.config("redis_url"));
+var db = client.createClient(process.env.REDIS_URL);
 
 module.exports = {
     limit: function (opts, req, res, next) {
