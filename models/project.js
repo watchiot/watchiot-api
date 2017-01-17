@@ -82,6 +82,7 @@ module.exports = function (sequelize, DataTypes) {
             },
             evalMetrics: function(metrics, callback) {
                 var config = this.parse();
+
                 for(var status in config) {
                     if(status !== "metrics" && status !== "default") {
                         try {

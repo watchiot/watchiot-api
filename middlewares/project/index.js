@@ -88,7 +88,7 @@ module.exports = {
         })));
     },
     validMetrics: function (req, res, next) {
-        req.project.validMetrics(req.body.metrics, function(errors){
+        req.project.validMetrics(req.body.metrics, function(errors) {
             if(helper.isEmpty(errors)) {
                 return next();
             }
@@ -101,6 +101,7 @@ module.exports = {
     },
     evalMetrics: function (req, res, next) {
         req.project.evalMetrics(req.body.metrics, function (statusMetric, notif) {
+
             if (statusMetric) {
                 req.statusMetric = statusMetric;
                 req.notif = notif;
