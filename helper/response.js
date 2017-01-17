@@ -1,5 +1,5 @@
-module.exports = function Response(code, msg, data){
+module.exports = function Response(code, msg, error) {
     this.code = code;
-    this.msg = msg;
-    this.data = data;
+    this.msg = msg || '';
+    this.error = error || {};
 };

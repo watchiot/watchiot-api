@@ -18,7 +18,7 @@ router.post('/', function (req, res) {
     var msg  = 'The USERNAME and API KEY are corrects. Welcome ' + req.user.username
         msg += ' your principal email is ' + principalEmail.email;
 
-    res.json(JSON.stringify(new Response(200, msg, {})));
+    res.json(JSON.stringify(new Response(200, msg)));
 });
 
 /** custom middlewares **/
@@ -43,7 +43,7 @@ var middlewares = [
 router.post('/:space/:project', middlewares,
     function (req, res) {
         var msg = 'The request was OK. Your metrics will be processed.';
-        res.json(JSON.stringify(new Response(200, msg, {})));
+        res.json(JSON.stringify(new Response(200, msg)));
     });
 
 module.exports = router;
