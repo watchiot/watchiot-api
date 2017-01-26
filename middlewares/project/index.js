@@ -47,7 +47,7 @@ module.exports = {
                 return next();
             }
 
-            res.status(420).json(JSON.stringify(new Response(420, 'IP RESTRICTION', {
+            res.status(403).json(JSON.stringify(new Response(403, 'FORBIDDEN', {
                 description: 'You are using an IP that it is not specified in the project yml.'
             })));
         });
