@@ -24,6 +24,7 @@ function start(id) {
     /** consume the notifications **/
     rabbit.consume(function(data, ack) {
         /** send the notification to the notification api **/
+        /** NotifAPI services **/
 
         /** put the notification as processed on true **/
         Notif.saveProcessed(data.id, function(save) {

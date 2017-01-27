@@ -18,7 +18,7 @@ module.exports = {
             }
 
             res.status(404).json(JSON.stringify(new Response(404, 'NOT FOUND', {
-                description: 'The space name or project name does not exist.'
+                description: 'The space name or project name does not exist'
             })));
         });
     },
@@ -37,7 +37,7 @@ module.exports = {
         }
 
         res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
-            description: 'The project yml is not configured correctly. It is empty or contains errors.'
+            description: 'The project yml is not configured correctly. It is empty or contains errors'
         })));
     },
     validIp: function(req, res, next) {
@@ -48,7 +48,7 @@ module.exports = {
             }
 
             res.status(403).json(JSON.stringify(new Response(403, 'FORBIDDEN', {
-                description: 'You are using an IP that it is not specified in the project yml.'
+                description: 'You are using an IP that it is not specified in the project yml'
             })));
         });
     },
@@ -94,7 +94,7 @@ module.exports = {
             }
 
             res.status(400).json(JSON.stringify(new Response(400, 'BAD REQUEST', {
-                description: "Errors into the metrics.",
+                description: "Errors into the metrics",
                 fields: errors
             })));
         });
@@ -109,7 +109,7 @@ module.exports = {
             }
 
             res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
-                description: 'The project yml is not configured correctly.'
+                description: 'The project yml is not configured correctly'
             })));
         });
     },
