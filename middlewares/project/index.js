@@ -75,7 +75,7 @@ module.exports = {
                 return next(limitOpts);
             }
 
-            res.status(500).json(JSON.stringify(new Response(500, 'EXCEPTION', {})));
+            res.status(500).json(JSON.stringify(new Response(500, 'INTERNAL SERVER ERROR', {})));
         });
     },
     hasMetric: function (req, res, next) {
@@ -109,7 +109,7 @@ module.exports = {
             }
 
             res.status(420).json(JSON.stringify(new Response(420, 'BAD YML CONFIG PROJECT', {
-                description: 'The project yml is not configured correctly'
+                description: 'The project yml is not configured correctly. It is empty or contains errors'
             })));
         });
     },

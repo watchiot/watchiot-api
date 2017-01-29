@@ -42,7 +42,7 @@ var middlewares = [
 /** POST api request **/
 router.post('/:space/:project', middlewares,
     function (req, res) {
-        var msg = 'The request was OK. Your metrics will be processed';
+        var msg = 'The request was OK. Your metrics are being processed';
         res.json(JSON.stringify(new Response(200, msg)));
     });
 
